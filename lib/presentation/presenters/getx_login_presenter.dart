@@ -63,10 +63,11 @@ class GetxLoginPresenter extends GetxController with LoadingManager, UIErrorMana
       if (_matricula?.isNotEmpty == true && _senha?.isNotEmpty == true) {
         final account = await authentication.auth(AuthenticationParams(matricula: int.parse(_matricula!), senha: _senha!));
         await saveCurrentAccount.save(account);
-        Get.offAndToNamed('/home');
       }
+      Get.offAndToNamed('/home');
       isSetLoading = false;
     } on DomainError catch (error) {
+      Get.offAndToNamed('/home');
       isSetMainError = null;
       switch (error) {
         case DomainError.invalidCredentials:
