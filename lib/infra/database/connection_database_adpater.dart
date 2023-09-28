@@ -25,6 +25,7 @@ class ConnectionDatabaseAdapter implements Connection {
       print(connection.toString());
       await connection.open();
       List<List<dynamic>> results = await connection.query("SELECT * FROM curso");
+
       print(results);
     } catch (e) {
       print(e);
