@@ -10,7 +10,7 @@ class GetxHomePresenter extends GetxController implements HomePresenter {
   GetxHomePresenter({required this.loadCurrentAccount});
 
   @override
-  UserType? userType;
+  Rx<UserType?> userType = Rx(null);
 
   @override
   RxInt currentPageIndex = 0.obs;
@@ -25,6 +25,6 @@ class GetxHomePresenter extends GetxController implements HomePresenter {
     var info = await loadCurrentAccount.load();
 
     var decodeInfo = JwtDecoder.decode(info.token);
-    if (decodeInfo.isNotEmpty) userType = decodeInfo.values.contains('aluno') ? UserType.aluno : UserType.professor;
+    if (decodeInfo.isNotEmpty) userType.value = decodeInfo.values.contains('aluno') ? UserType.aluno : UserType.professor;
   }
 }
