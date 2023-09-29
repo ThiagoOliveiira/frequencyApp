@@ -6,5 +6,4 @@ LoginPresenter makeGetxLoginPresenter() => GetxLoginPresenter(
       authentication: makeRemoteAuthentication(),
       validation: makeLoginValidation(),
       saveCurrentAccount: makeLocalSaveCurrentAccount(),
-      connection: makeConnectionDatabaseFactory(),
     );

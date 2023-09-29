@@ -2,18 +2,23 @@ import 'package:frequency_app/data/data.dart';
 import '../../../domain/domain.dart';
 
 class RemoteAuthentication extends Authentication {
-  final HttpClient httpClient;
-  final String url;
+  final PostDatabase postDatabase;
+  // final HttpClient httpClient;
+  // final String url;
 
-  RemoteAuthentication({required this.httpClient, required this.url});
+  RemoteAuthentication({required this.postDatabase});
 
   @override
   Future<AccountEntity?> auth(AuthenticationParams params) async {
-    final body = RemoteAuthenticationParams.fromDomain(params).toJson();
     try {
-      final httpResponse = await httpClient.request(url: url, method: 'post', body: body);
+      final httpResponse =
+          await postDatabase.post(query: 'SELECT * FROM USUARIO WHERE matricula = @aMatricula and senha = @aSenha', substitutionValues: {"aMatricula": params.matricula, "aSenha": params.senha});
 
-      return RemoteAccountModel.fromJson(httpResponse).toEntity();
+      if (httpResponse == null) DomainError.invalidCredentials;
+
+      final resultJson = httpResponse.map((e) => AccountEntity.toMap(e)).toList();
+
+      return RemoteAccountModel.fromJson(resultJson.first).toEntity();
     } on HttpError catch (error) {
       throw error == HttpError.unauthorized ? DomainError.invalidCredentials : DomainError.unexpected;
     }

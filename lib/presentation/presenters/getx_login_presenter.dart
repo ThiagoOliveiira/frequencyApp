@@ -1,6 +1,5 @@
 import 'package:get/get.dart';
 
-import '../../data/data.dart';
 import '../../domain/domain.dart';
 import '../../ui/ui.dart';
 import '../presentation.dart';
@@ -9,12 +8,11 @@ class GetxLoginPresenter extends GetxController with LoadingManager, UIErrorMana
   final Validation validation;
   final Authentication authentication;
   final SaveCurrentAccount saveCurrentAccount;
-  final Connection connection;
 
-  GetxLoginPresenter({required this.authentication, required this.validation, required this.saveCurrentAccount, required this.connection});
+  GetxLoginPresenter({required this.authentication, required this.validation, required this.saveCurrentAccount});
 
-  String? _matricula = '10101012';
-  String? _senha = 'senha1234';
+  String? _matricula = '12345678';
+  String? _senha = 'senha098';
 
   @override
   void onInit() async {
@@ -60,28 +58,26 @@ class GetxLoginPresenter extends GetxController with LoadingManager, UIErrorMana
 
   @override
   Future<void> auth() async {
-    await connection.connectionDB();
-
-    // try {
-    //   isSetLoading = true;
-    //   if (_matricula?.isNotEmpty == true && _senha?.isNotEmpty == true) {
-    //     final account = await authentication.auth(AuthenticationParams(matricula: int.parse(_matricula!), senha: _senha!));
-    //     await saveCurrentAccount.save(account);
-    //   }
-    //   Get.offAndToNamed('/home');
-    //   isSetLoading = false;
-    // } on DomainError catch (error) {
-    //   Get.offAndToNamed('/home');
-    //   isSetMainError = null;
-    //   switch (error) {
-    //     case DomainError.invalidCredentials:
-    //       isSetMainError = UIError.invalidCredentials;
-    //       break;
-    //     default:
-    //       isSetMainError = UIError.unexpected;
-    //       break;
-    //   }
-    //   isSetLoading = false;
-    // }
+    try {
+      isSetLoading = true;
+      if (_matricula?.isNotEmpty == true && _senha?.isNotEmpty == true) {
+        final account = await authentication.auth(AuthenticationParams(matricula: int.parse(_matricula!), senha: _senha!));
+        await saveCurrentAccount.save(account);
+      }
+      Get.offAndToNamed('/home');
+      isSetLoading = false;
+    } on DomainError catch (error) {
+      Get.offAndToNamed('/home');
+      isSetMainError = null;
+      switch (error) {
+        case DomainError.invalidCredentials:
+          isSetMainError = UIError.invalidCredentials;
+          break;
+        default:
+          isSetMainError = UIError.unexpected;
+          break;
+      }
+      isSetLoading = false;
+    }
   }
 }

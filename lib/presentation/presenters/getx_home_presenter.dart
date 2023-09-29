@@ -17,14 +17,14 @@ class GetxHomePresenter extends GetxController implements HomePresenter {
 
   @override
   void onInit() async {
-    await loadUserInfo();
+    // await loadUserInfo();
     super.onInit();
   }
 
-  Future<void> loadUserInfo() async {
-    var info = await loadCurrentAccount.load();
+  // Future<void> loadUserInfo() async {
+  //   var info = await loadCurrentAccount.load();
 
-    var decodeInfo = JwtDecoder.decode(info.token);
-    if (decodeInfo.isNotEmpty) userType.value = decodeInfo.values.contains('aluno') ? UserType.aluno : UserType.professor;
-  }
+  //   var decodeInfo = JwtDecoder.decode(info.token);
+  //   if (decodeInfo.isNotEmpty) userType.value = decodeInfo.values.contains('aluno') ? UserType.aluno : UserType.professor;
+  // }
 }

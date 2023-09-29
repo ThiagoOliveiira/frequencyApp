@@ -3,4 +3,4 @@ import 'package:frequency_app/domain/domain.dart';
 
 import '../factories.dart';
 
-Authentication makeRemoteAuthentication() => RemoteAuthentication(url: makeApiUrl('auth/login'), httpClient: makeHttpAdapter());
+Authentication makeRemoteAuthentication() => RemoteAuthentication(postDatabase: makeConnectionDatabaseAdapter());
