@@ -1,5 +1,4 @@
 import 'package:get/get.dart';
-import 'package:jwt_decoder/jwt_decoder.dart';
 
 import '../../domain/domain.dart';
 import '../../ui/ui.dart';
@@ -17,14 +16,13 @@ class GetxHomePresenter extends GetxController implements HomePresenter {
 
   @override
   void onInit() async {
-    // await loadUserInfo();
+    await loadUserInfo();
     super.onInit();
   }
 
-  // Future<void> loadUserInfo() async {
-  //   var info = await loadCurrentAccount.load();
+  Future<void> loadUserInfo() async {
+    var userEntity = await loadCurrentAccount.loadUserEntity();
 
-  //   var decodeInfo = JwtDecoder.decode(info.token);
-  //   if (decodeInfo.isNotEmpty) userType.value = decodeInfo.values.contains('aluno') ? UserType.aluno : UserType.professor;
-  // }
+    if (userEntity != null) userType.value = userEntity.tipo?.contains('aluno') == true ? UserType.aluno : UserType.professor;
+  }
 }

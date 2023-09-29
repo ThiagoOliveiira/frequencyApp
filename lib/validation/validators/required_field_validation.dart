@@ -4,6 +4,7 @@ import '../protocols/protocols.dart';
 import 'package:equatable/equatable.dart';
 
 class RequiredFieldValidation extends Equatable implements FieldValidation {
+  @override
   final String field;
 
   @override

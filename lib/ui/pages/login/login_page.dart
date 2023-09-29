@@ -84,8 +84,8 @@ class LoginPage extends StatelessWidget with UIErrorManager, KeyboardManager {
                           overlayColor: const MaterialStatePropertyAll(AppColor.bluegreen600),
                           padding: const MaterialStatePropertyAll((EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
                         ),
-                        child: Row(
-                          children: const [
+                        child: const Row(
+                          children: [
                             Spacer(),
                             Text('Acessar conta', style: TextStyle(color: AppColor.white, fontSize: 18)),
                             Spacer(),

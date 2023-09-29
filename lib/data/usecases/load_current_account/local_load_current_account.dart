@@ -1,7 +1,8 @@
+import 'package:frequency_app/data/data.dart';
+
 import '../../../domain/entities/entities.dart';
 import '../../../domain/helpers/helpers.dart';
 import '../../../domain/usecases/usecases.dart';
-import '../../cache/cache.dart';
 
 class LocalLoadCurrentAccount implements LoadCurrentAccount {
   final FetchSecureCacheStorage fetchSecureCacheStorage;
@@ -9,11 +10,11 @@ class LocalLoadCurrentAccount implements LoadCurrentAccount {
   LocalLoadCurrentAccount({required this.fetchSecureCacheStorage});
 
   @override
-  Future<AccountEntity> load() async {
+  Future<AccountEntity?> loadUserEntity() async {
     try {
-      final id = await fetchSecureCacheStorage.fetch('id');
-      if (id == null) throw Error();
-      return AccountEntity(id: int.parse(id));
+      final serializable = await fetchSecureCacheStorage.fetch('id');
+      if (serializable == null || serializable.isEmpty) return null;
+      return RemoteAccountModel.deserialize(serializable).toEntity();
     } catch (error) {
       throw DomainError.unexpected;
     }

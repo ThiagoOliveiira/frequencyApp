@@ -16,7 +16,10 @@ class ClassroomPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: InkWell(
-                onTap: () => Get.to(() => const NewClassroomPage()), borderRadius: BorderRadius.circular(50), splashColor: AppColor.bege, child: const Icon(Icons.add, color: AppColor.bluegreen600)),
+                onTap: () => Get.to(() => const NewClassroomPage()),
+                borderRadius: BorderRadius.circular(50),
+                splashColor: AppColor.bege,
+                child: const Icon(Icons.add, color: AppColor.bluegreen600)),
           ),
         ],
       ),
@@ -37,9 +40,9 @@ class ClassroomPage extends StatelessWidget {
             iconColor: AppColor.bluegreen,
             title: const Text('Sistemas de informação', style: TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)),
             subtitle: const Text('Banco de dados', style: TextStyle(color: AppColor.bluegreen600)),
-            trailing: Column(
+            trailing: const Column(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: const [Text('Hoje', style: TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)), Text('19:00', style: TextStyle(color: AppColor.bluegreen600))],
+              children: [Text('Hoje', style: TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)), Text('19:00', style: TextStyle(color: AppColor.bluegreen600))],
             ),
           )
         ],

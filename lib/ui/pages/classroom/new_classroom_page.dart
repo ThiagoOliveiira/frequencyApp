@@ -65,8 +65,8 @@ class NewClassroomPage extends StatelessWidget {
                 overlayColor: MaterialStatePropertyAll(AppColor.bluegreen600),
                 padding: MaterialStatePropertyAll((EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
               ),
-              child: Row(
-                children: const [
+              child: const Row(
+                children: [
                   Spacer(),
                   Text('Criar Aula', style: TextStyle(color: AppColor.white, fontSize: 18)),
                   Spacer(),

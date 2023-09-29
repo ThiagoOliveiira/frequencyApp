@@ -3,20 +3,18 @@ import '../../../domain/domain.dart';
 
 class RemoteAuthentication extends Authentication {
   final PostDatabase postDatabase;
-  // final HttpClient httpClient;
-  // final String url;
 
   RemoteAuthentication({required this.postDatabase});
 
   @override
   Future<AccountEntity?> auth(AuthenticationParams params) async {
     try {
-      final httpResponse =
-          await postDatabase.post(query: 'SELECT * FROM USUARIO WHERE matricula = @aMatricula and senha = @aSenha', substitutionValues: {"aMatricula": params.matricula, "aSenha": params.senha});
+      final httpResponse = await postDatabase
+          .post(query: 'SELECT * FROM USUARIO WHERE matricula = @aMatricula and senha = @aSenha', substitutionValues: {"aMatricula": params.matricula, "aSenha": params.senha});
 
       if (httpResponse == null) DomainError.invalidCredentials;
 
-      final resultJson = httpResponse.map((e) => AccountEntity.toMap(e)).toList();
+      final resultJson = httpResponse.map((e) => AccountEntity.toMapDynamic(e)).toList();
 
       return RemoteAccountModel.fromJson(resultJson.first).toEntity();
     } on HttpError catch (error) {

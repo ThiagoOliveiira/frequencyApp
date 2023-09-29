@@ -10,16 +10,17 @@ class ConnectionDatabaseAdapter implements PostDatabase {
   final String username;
   final String password;
 
+  // ignore: prefer_typing_uninitialized_variables
   var connection;
 
   ConnectionDatabaseAdapter({required this.host, required this.port, required this.dbName, required this.username, required this.password});
-  @override
+
   Future<void> _connectionDB() async {
     try {
       connection = PostgreSQLConnection(host, port, dbName, username: username, password: password, useSSL: true);
-      await connection.open();
+      await connection?.open();
     } catch (e) {
-      print(e);
+      throw DomainError.unexpected;
     }
   }
 
@@ -27,23 +28,10 @@ class ConnectionDatabaseAdapter implements PostDatabase {
   Future<dynamic> post({String? query, dynamic substitutionValues}) async {
     try {
       await _connectionDB();
-
-      print(substitutionValues);
-      // query = 'SELECT * FROM USUARIO WHERE matricula = @aMatricula and senha = @aSenha';
-      // substitutionValues = {"aMatricula": 12345678, "aSenha": 'senha098'};
-
       dynamic results = await connection.query(query, substitutionValues: substitutionValues);
-
-      print(results);
-
       return results;
-
-      // final resultJson = results.map((e) => DisciplinaEntity.toMap(e)).toList();
-
-      // print(results);
-      // print(resultJson);
     } catch (e) {
-      print(e);
+      throw DomainError.unexpected;
     }
   }
 }

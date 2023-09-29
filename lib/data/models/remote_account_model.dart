@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import '../../domain/domain.dart';
 
 class RemoteAccountModel {
@@ -20,4 +22,6 @@ class RemoteAccountModel {
   }
 
   AccountEntity toEntity() => AccountEntity(id: id, matricula: matricula, senha: senha, nome: nome, tipo: tipo);
+
+  static RemoteAccountModel deserialize(String serial) => RemoteAccountModel.fromJson(jsonDecode(serial));
 }

@@ -4,6 +4,7 @@ import '../protocols/protocols.dart';
 import 'package:equatable/equatable.dart';
 
 class MinLengthValidation extends Equatable implements FieldValidation {
+  @override
   final String field;
   final int size;
 
