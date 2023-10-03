@@ -3,7 +3,7 @@ import 'package:postgres/postgres.dart';
 import '../../data/data.dart';
 import '../../domain/domain.dart';
 
-class ConnectionDatabaseAdapter implements PostDatabase {
+class ConnectionDatabaseAdapter implements PostDatabase, GetDatabase {
   final String host;
   final int port;
   final String dbName;
@@ -26,6 +26,18 @@ class ConnectionDatabaseAdapter implements PostDatabase {
 
   @override
   Future<dynamic> post({String? query, dynamic substitutionValues}) async {
+    try {
+      await _connectionDB();
+      print(query);
+      dynamic results = await connection.query(query, substitutionValues: substitutionValues);
+      return results;
+    } catch (e) {
+      throw DomainError.unexpected;
+    }
+  }
+
+  @override
+  Future get({String? query, substitutionValues}) async {
     try {
       await _connectionDB();
       dynamic results = await connection.query(query, substitutionValues: substitutionValues);

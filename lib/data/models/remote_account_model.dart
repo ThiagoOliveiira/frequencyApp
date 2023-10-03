@@ -4,7 +4,7 @@ import '../../domain/domain.dart';
 
 class RemoteAccountModel {
   final int? id;
-  final String? matricula;
+  final int? matricula;
   final String? nome;
   final String? senha;
   final String? tipo;

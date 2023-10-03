@@ -12,7 +12,7 @@ class LocalLoadCurrentAccount implements LoadCurrentAccount {
   @override
   Future<AccountEntity?> loadUserEntity() async {
     try {
-      final serializable = await fetchSecureCacheStorage.fetch('id');
+      final serializable = await fetchSecureCacheStorage.fetch('account');
       if (serializable == null || serializable.isEmpty) return null;
       return RemoteAccountModel.deserialize(serializable).toEntity();
     } catch (error) {

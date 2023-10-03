@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frequency_app/domain/domain.dart';
 import 'package:get/get.dart';
 
 import '../../ui.dart';
@@ -16,10 +17,7 @@ class ClassroomPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 15),
             child: InkWell(
-                onTap: () => Get.to(() => const NewClassroomPage()),
-                borderRadius: BorderRadius.circular(50),
-                splashColor: AppColor.bege,
-                child: const Icon(Icons.add, color: AppColor.bluegreen600)),
+                onTap: () => Get.to(() => const NewClassroomPage()), borderRadius: BorderRadius.circular(50), splashColor: AppColor.bege, child: const Icon(Icons.add, color: AppColor.bluegreen600)),
           ),
         ],
       ),
@@ -30,21 +28,22 @@ class ClassroomPage extends StatelessWidget {
         onPressed: () => Get.to(() => const NewClassroomPage()),
       ),
       body: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ListTile(
-            leading: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: const BoxDecoration(color: AppColor.grey300, shape: BoxShape.circle),
-              child: const Icon(Icons.class_outlined),
-            ),
-            iconColor: AppColor.bluegreen,
-            title: const Text('Sistemas de informação', style: TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)),
-            subtitle: const Text('Banco de dados', style: TextStyle(color: AppColor.bluegreen600)),
-            trailing: const Column(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [Text('Hoje', style: TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)), Text('19:00', style: TextStyle(color: AppColor.bluegreen600))],
-            ),
-          )
+          Obx(
+            () => presenter.isLoading.value
+                ? const Center(child: CircularProgressIndicator(color: AppColor.bluegreen600))
+                : Expanded(
+                    child: ListView.builder(
+                      itemCount: presenter.aulaEntity.value?.length,
+                      shrinkWrap: true,
+                      itemBuilder: (context, index) {
+                        AulaEntity? aula = presenter.aulaEntity.value?[index];
+                        return ClassroomItemComponent(aula: aula);
+                      },
+                    ),
+                  ),
+          ),
         ],
       ),
     );

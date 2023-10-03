@@ -1,12 +1,15 @@
+import 'package:flutter/material.dart';
+import 'package:frequency_app/presentation/presentation.dart';
 import 'package:get/get.dart';
 
 import '../../domain/domain.dart';
 import '../../ui/ui.dart';
 
-class GetxHomePresenter extends GetxController implements HomePresenter {
+class GetxHomePresenter extends GetxController with LoadingManager implements HomePresenter {
   final LoadCurrentAccount loadCurrentAccount;
+  final DeleteAccount deleteAccount;
 
-  GetxHomePresenter({required this.loadCurrentAccount});
+  GetxHomePresenter({required this.loadCurrentAccount, required this.deleteAccount});
 
   @override
   Rx<UserType?> userType = Rx(null);
@@ -15,14 +18,48 @@ class GetxHomePresenter extends GetxController implements HomePresenter {
   RxInt currentPageIndex = 0.obs;
 
   @override
+  Rx<AccountEntity?> accountEntity = Rx(null);
+
+  @override
   void onInit() async {
     await loadUserInfo();
     super.onInit();
   }
 
   Future<void> loadUserInfo() async {
-    var userEntity = await loadCurrentAccount.loadUserEntity();
+    accountEntity.value = await loadCurrentAccount.loadUserEntity();
 
-    if (userEntity != null) userType.value = userEntity.tipo?.contains('aluno') == true ? UserType.aluno : UserType.professor;
+    if (accountEntity.value != null) userType.value = accountEntity.value?.tipo?.contains('aluno') == true ? UserType.aluno : UserType.professor;
+  }
+
+  @override
+  Future<void> logout() async {
+    try {
+      isSetLoading = true;
+      Get.defaultDialog(
+        backgroundColor: Colors.white,
+        title: '',
+        radius: 15,
+        barrierDismissible: false,
+        content: Column(
+          children: const [
+            SizedBox(height: 30, width: 30, child: CircularProgressIndicator(strokeWidth: 2, color: AppColor.bluegreen600)),
+            SizedBox(height: 20),
+            Text('Saindo...', style: TextStyle(fontWeight: FontWeight.w600, color: AppColor.bluegreen600))
+          ],
+        ),
+      );
+      deleteAccount.deleteLocalAccount();
+
+      await Future.delayed(const Duration(seconds: 2));
+
+      Get.back();
+
+      Get.offAllNamed('/login');
+
+      isSetLoading = false;
+    } catch (e) {
+      Exception();
+    }
   }
 }

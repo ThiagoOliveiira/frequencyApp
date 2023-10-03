@@ -4,7 +4,7 @@ import 'package:equatable/equatable.dart';
 
 class AccountEntity extends Equatable {
   final int? id;
-  final String? matricula;
+  final int? matricula;
   final String? nome;
   final String? senha;
   final String? tipo;
@@ -28,13 +28,7 @@ class AccountEntity extends Equatable {
         "tipo": userLoggedEntity.tipo,
       };
 
-  const AccountEntity({
-    this.matricula,
-    this.nome,
-    this.senha,
-    this.tipo,
-    this.id,
-  });
+  const AccountEntity({this.matricula, this.nome, this.senha, this.tipo, this.id});
 
   static String serialize(AccountEntity userLoggedEntity) => jsonEncode(AccountEntity.toMap(userLoggedEntity));
 }

@@ -9,7 +9,7 @@ class LocalSaveCurrentAccount implements SaveCurrentAccount {
   @override
   Future<void> save(AccountEntity? account) async {
     try {
-      if (account != null) await saveSecureCacheStorage.save(key: 'id', value: AccountEntity.serialize(account));
+      if (account != null) await saveSecureCacheStorage.save(key: 'account', value: AccountEntity.serialize(account));
     } catch (error) {
       throw DomainError.unexpected;
     }

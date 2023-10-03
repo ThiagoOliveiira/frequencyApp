@@ -10,16 +10,16 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Builder(builder: (context) {
-      return Scaffold(
+    return Obx(
+      () => Scaffold(
         bottomNavigationBar: const DefaultBottomNavigationBar(currentPageIndex: 0),
         appBar: AppBar(
-          title: const Text('Oi, Thiago.', style: TextStyle(color: AppColor.bluegreen600, fontSize: 18, fontWeight: FontWeight.bold)),
+          title: Text('Oi, ${presenter.accountEntity.value?.nome}', style: const TextStyle(color: AppColor.bluegreen600, fontSize: 18, fontWeight: FontWeight.bold)),
           actions: [
             Padding(
               padding: const EdgeInsets.only(right: 15),
               child: InkWell(
-                onTap: () {},
+                onTap: () async => await presenter.logout(),
                 borderRadius: BorderRadius.circular(50),
                 splashColor: AppColor.bege,
                 child: SvgPicture.asset('assets/icons/logout.svg', color: AppColor.bluegreen),
@@ -52,9 +52,9 @@ class HomePage extends StatelessWidget {
                         overlayColor: MaterialStatePropertyAll(AppColor.bluegreen600),
                         padding: MaterialStatePropertyAll((EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
                       ),
-                      child: const Row(
+                      child: Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
+                        children: const [
                           Text('Confirmar', style: TextStyle(color: AppColor.white, fontSize: 18)),
                         ],
                       ),
@@ -63,11 +63,11 @@ class HomePage extends StatelessWidget {
                   ],
                 ),
               )
-            : const Column(
+            : Column(
                 mainAxisAlignment: MainAxisAlignment.end,
-                children: [],
+                children: const [],
               )),
-      );
-    });
+      ),
+    );
   }
 }

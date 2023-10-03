@@ -19,9 +19,9 @@ class DefaultBottomNavigationBar extends StatelessWidget {
 
   _handleNavigation(int index) {
     if (index == 0) {
-      Get.toNamed('/home');
+      Get.offAllNamed('/home');
     } else {
-      Get.toNamed('/classroom');
+      Get.offAllNamed('/classroom');
     }
   }
 }
