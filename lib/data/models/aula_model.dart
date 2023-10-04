@@ -11,19 +11,20 @@ class AulaModel {
   final int? idDisciplina;
   final String? nomeDisciplina;
   final bool? finalizada;
+  final bool? iniciada;
 
-  const AulaModel({
-    required this.id,
-    required this.codigoAula,
-    required this.latitude,
-    required this.longitude,
-    required this.dataAula,
-    required this.idCurso,
-    required this.nomeCurso,
-    required this.idDisciplina,
-    required this.nomeDisciplina,
-    required this.finalizada,
-  });
+  const AulaModel(
+      {required this.id,
+      required this.codigoAula,
+      required this.latitude,
+      required this.longitude,
+      required this.dataAula,
+      required this.idCurso,
+      required this.nomeCurso,
+      required this.idDisciplina,
+      required this.nomeDisciplina,
+      required this.finalizada,
+      required this.iniciada});
 
   static Map<String, dynamic> toMapDynamic(List<dynamic>? aulaEntity) => {
         "id": aulaEntity?.first,
@@ -36,6 +37,7 @@ class AulaModel {
         "id_disciplina": aulaEntity?[7],
         "nome_disciplina": aulaEntity?[8],
         "finalizada": aulaEntity?[9],
+        "iniciada": aulaEntity?[10],
       };
 
   factory AulaModel.fromJson(dynamic json) {
@@ -50,6 +52,7 @@ class AulaModel {
       idDisciplina: json['idDisciplina'],
       nomeDisciplina: json['nomeDisciplina'],
       finalizada: json['finalizada'],
+      iniciada: json['iniciada'],
     );
   }
 
@@ -64,5 +67,6 @@ class AulaModel {
         idDisciplina: idDisciplina,
         nomeDisciplina: nomeDisciplina,
         finalizada: finalizada,
+        iniciada: iniciada,
       );
 }

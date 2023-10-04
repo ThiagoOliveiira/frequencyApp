@@ -1,5 +1,3 @@
-import 'dart:ffi';
-
 import 'package:get/get.dart';
 
 import '../../domain/domain.dart';
@@ -53,7 +51,8 @@ class GetxClassroomPresenter extends GetxController with LoadingManager implemen
     try {
       isSetLoading = true;
       if (aulaEntity != null) {
-        await classroomUsecase.startClass(aulaEntity);
+        await classroomUsecase.startClass(AulaEntity.copy(aulaEntity));
+        await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
       }
       isSetLoading = false;
     } catch (e) {

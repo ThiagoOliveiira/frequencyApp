@@ -41,7 +41,8 @@ class ClassroomItemComponent extends StatelessWidget {
         trailing: Column(
           mainAxisAlignment: MainAxisAlignment.spaceEvenly,
           children: [
-            Text(_handleDataTimeDay(aula?.dataAula) ?? '', style: const TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)),
+            Text(_handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada) ?? '',
+                style: const TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)),
             Text(_handleDataTimeHour(aula?.dataAula) ?? '', style: const TextStyle(color: AppColor.bluegreen600))
           ],
         ),
@@ -49,19 +50,22 @@ class ClassroomItemComponent extends StatelessWidget {
     );
   }
 
-  void start(BuildContext context, ClassroomPresenter presenter) async {
-    // await presenter.startClass(aula);
-  }
-
-  String? _handleDataTimeDay(DateTime? dataAula) {
+  String? _handleDataTimeDay(DateTime? dataAula, {bool? iniciada, bool? finalizada}) {
     int currentDay = DateTime.now().day;
     if (dataAula != null) {
-      if (dataAula.day == currentDay) {
-        return 'Hoje';
+      if (iniciada == true) {
+        return 'Iniciada';
+      } else if (finalizada == true) {
+        return 'Encerrada';
       } else {
-        return 'Dia ${_handleDate(dataAula.day)}/${_handleDate(dataAula.month)}';
+        if (dataAula.day == currentDay) {
+          return 'Hoje';
+        } else {
+          return 'Dia ${_handleDate(dataAula.day)}/${_handleDate(dataAula.month)}';
+        }
       }
     }
+    return null;
   }
 
   String? _handleDate(int? info) {
@@ -71,6 +75,7 @@ class ClassroomItemComponent extends StatelessWidget {
       }
       return info.toString();
     }
+    return null;
   }
 
   String? _handleDataTimeHour(DateTime? dataAula) {

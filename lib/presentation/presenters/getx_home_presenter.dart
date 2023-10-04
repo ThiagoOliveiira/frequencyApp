@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:frequency_app/presentation/presentation.dart';
 import 'package:get/get.dart';
+import 'package:location/location.dart';
 
 import '../../domain/domain.dart';
 import '../../ui/ui.dart';
@@ -23,6 +24,7 @@ class GetxHomePresenter extends GetxController with LoadingManager implements Ho
   @override
   void onInit() async {
     await loadUserInfo();
+
     super.onInit();
   }
 
@@ -61,5 +63,21 @@ class GetxHomePresenter extends GetxController with LoadingManager implements Ho
     } catch (e) {
       Exception();
     }
+  }
+
+  Future<void> requestLocationPermition() async {
+    try {
+      Location location = Location();
+
+      bool _serviceEnabled;
+
+      _serviceEnabled = await location.serviceEnabled();
+      if (!_serviceEnabled) {
+        _serviceEnabled = await location.requestService();
+        if (!_serviceEnabled) {
+          return;
+        }
+      }
+    } catch (e) {}
   }
 }

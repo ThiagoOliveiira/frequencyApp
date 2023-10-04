@@ -30,6 +30,7 @@ class ConnectionDatabaseAdapter implements PostDatabase, GetDatabase {
       await _connectionDB();
       print(query);
       dynamic results = await connection.query(query, substitutionValues: substitutionValues);
+      print(results);
       return results;
     } catch (e) {
       throw DomainError.unexpected;
@@ -41,6 +42,7 @@ class ConnectionDatabaseAdapter implements PostDatabase, GetDatabase {
     try {
       await _connectionDB();
       dynamic results = await connection.query(query, substitutionValues: substitutionValues);
+      print(results);
       return results;
     } catch (e) {
       throw DomainError.unexpected;
