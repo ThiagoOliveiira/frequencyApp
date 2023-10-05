@@ -1,5 +1,7 @@
 import 'package:get/get.dart';
 import 'package:location/location.dart';
+import 'package:wifi_flutter/wifi_flutter.dart';
+import 'package:wifi_info_plugin_plus/wifi_info_plugin_plus.dart';
 import 'package:wifi_scan/wifi_scan.dart';
 
 import '../../domain/domain.dart';
@@ -115,19 +117,32 @@ class GetxClassroomPresenter extends GetxController with LoadingManager implemen
   @override
   Future<void> getWifiNetworks(int? aulaId) async {
     try {
-      Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
-      Rx<List<String>> listSSID = Rx([]);
-
-      // check platform support and necessary requirements
-      final can = await WiFiScan.instance.canStartScan(askPermissions: true);
-      if (can == CanStartScan.yes) {
-        final isScanning = await WiFiScan.instance.startScan();
-        print(isScanning);
-
-        final list = await WiFiScan.instance.getScannedResults();
-
-        print(list.map((e) => e.ssid));
+      final noPermissions = await WifiFlutter.promptPermissions();
+      if (noPermissions) {
+        return;
       }
+      final networks = await WifiFlutter.wifiNetworks;
+
+      print(networks.map((e) => e.ssid));
+
+      // WifiInfoWrapper? wifiObject;
+
+      // wifiObject = await WifiInfoPlugin.wifiDetails;
+      // print(wifiObject?.linkSpeed);
+
+      // Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
+      // Rx<List<String>> listSSID = Rx([]);
+
+      // // check platform support and necessary requirements
+      // final can = await WiFiScan.instance.canStartScan();
+      // if (can == CanStartScan.yes) {
+      //   final isScanning = await WiFiScan.instance.startScan();
+      //   print(isScanning);
+
+      //   final list = await WiFiScan.instance.getScannedResults().then((value) => print(value.map((e) => e.ssid)));
+
+      // print(list.map((e) => e.ssid));
+      // }
 
       // final can = await WiFiScan.instance.canGetScannedResults(askPermissions: true);
       // if (can == CanGetScannedResults.yes) {
