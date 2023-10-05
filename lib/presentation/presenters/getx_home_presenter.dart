@@ -24,7 +24,6 @@ class GetxHomePresenter extends GetxController with LoadingManager implements Ho
   @override
   void onInit() async {
     await loadUserInfo();
-
     super.onInit();
   }
 
@@ -32,6 +31,7 @@ class GetxHomePresenter extends GetxController with LoadingManager implements Ho
     accountEntity.value = await loadCurrentAccount.loadUserEntity();
 
     if (accountEntity.value != null) userType.value = accountEntity.value?.tipo?.contains('aluno') == true ? UserType.aluno : UserType.professor;
+    await requestLocationPermition();
   }
 
   @override
@@ -72,6 +72,8 @@ class GetxHomePresenter extends GetxController with LoadingManager implements Ho
       bool _serviceEnabled;
 
       _serviceEnabled = await location.serviceEnabled();
+
+      print(_serviceEnabled);
       if (!_serviceEnabled) {
         _serviceEnabled = await location.requestService();
         if (!_serviceEnabled) {

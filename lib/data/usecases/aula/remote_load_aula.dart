@@ -29,16 +29,27 @@ class RemoteLoadAula implements ClassroomUsecase {
   @override
   Future<void> startClass(AulaEntity aulaEntity) async {
     try {
-      // String select = "select a.id, a.finalizada, a.codigo_aula, a.latitude, a.longitude, a.data_aula, a.id_curso, c.cuso,
-      // a.id_disciplina, d.disciplina from aula a inner join curso c ON c.id = a.id_curso inner join disciplina d on d.id = a.id_disciplina where a.id_professor = @oIdProfessor";
-
       String select = "UPDATE public.aula SET latitude=@aLatitude, longitude=@aLongitude, iniciada=@aulaIniciada WHERE id=@idAula";
 
+      print(aulaEntity);
+
       final httpResponse = await postDatabase
-          .post(query: select, substitutionValues: {'aLatitude': aulaEntity.latitude, 'aLongitude': aulaEntity.longitude, 'aulaIniciada': true, 'idAula': aulaEntity.id});
+          .post(query: select, substitutionValues: {'aLatitude': aulaEntity.latitude, 'aLongitude': aulaEntity.longitude, 'aulaIniciada': aulaEntity.iniciada, 'idAula': aulaEntity.id});
     } catch (error) {
       print(error);
-      // throw error == HttpError.unauthorized ? DomainError.invalidCredentials : DomainError.unexpected;
+    }
+  }
+
+  @override
+  Future<void> endClass(AulaEntity aulaEntity) async {
+    try {
+      String select = "UPDATE public.aula SET finalizada=@aulaFinalizada WHERE id=@idAula";
+
+      print(aulaEntity);
+
+      final httpResponse = await postDatabase.post(query: select, substitutionValues: {'aulaFinalizada': aulaEntity.finalizada, 'idAula': aulaEntity.id});
+    } catch (error) {
+      print(error);
     }
   }
 }

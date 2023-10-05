@@ -33,6 +33,7 @@ class ConnectionDatabaseAdapter implements PostDatabase, GetDatabase {
       print(results);
       return results;
     } catch (e) {
+      print(e);
       throw DomainError.unexpected;
     }
   }
