@@ -112,24 +112,42 @@ class GetxClassroomPresenter extends GetxController with LoadingManager implemen
     }
   }
 
+  @override
   Future<void> getWifiNetworks(int? aulaId) async {
     try {
       Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
       Rx<List<String>> listSSID = Rx([]);
-      final can = await WiFiScan.instance.canGetScannedResults(askPermissions: true);
-      if (can == CanGetScannedResults.yes) {
-        accessPoints.value = await WiFiScan.instance.getScannedResults();
+
+      // check platform support and necessary requirements
+      final can = await WiFiScan.instance.canStartScan(askPermissions: true);
+      if (can == CanStartScan.yes) {
+        final isScanning = await WiFiScan.instance.startScan();
+        print(isScanning);
+
+        final list = await WiFiScan.instance.getScannedResults();
+
+        print(list.map((e) => e.ssid));
       }
 
-      listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
+      // final can = await WiFiScan.instance.canGetScannedResults(askPermissions: true);
+      // if (can == CanGetScannedResults.yes) {
+      //   // print(can);
+      //   accessPoints.value = WiFiScan.instance.onScannedResultsAvailable.listen((result) {
+      //     print(result);
+      //   });
+      // }
 
-      listSSID.value.removeWhere((element) => element.isEmpty);
+      // listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
 
-      var wifiEntity = WifiClassConfirmationEntity(ssid1: listSSID.value.first, ssid2: listSSID.value[1], ssid3: listSSID.value.last, aulaId: aulaId, id: null);
+      // listSSID.value.removeWhere((element) => element.isEmpty);
 
-      print(wifiEntity);
+      // print(listSSID.value);
 
-      wifiInformationUsecase.saveNetworkInformation(wifiEntity);
+      // var wifiEntity = WifiClassConfirmationEntity(ssid1: listSSID.value.first, ssid2: listSSID.value[1], ssid3: listSSID.value.last, aulaId: aulaId, id: null);
+
+      // print(wifiEntity);
+
+      // wifiInformationUsecase.saveNetworkInformation(wifiEntity);
     } catch (e) {
       print("Erro ao obter a lista de redes Wi-Fi: $e");
     }

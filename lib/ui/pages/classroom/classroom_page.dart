@@ -22,12 +22,11 @@ class ClassroomPage extends StatelessWidget {
         ],
       ),
       bottomNavigationBar: const DefaultBottomNavigationBar(currentPageIndex: 1),
-
-      // floatingActionButton: FloatingActionButton.extended(
-      //   label: const Text('Nova aula'),
-      //   icon: const Icon(Icons.add),
-      //   onPressed: () => Get.to(() => const NewClassroomPage()),
-      // ),
+      floatingActionButton: FloatingActionButton.extended(
+        label: const Text('Nova aula'),
+        icon: const Icon(Icons.add),
+        onPressed: () => presenter.getWifiNetworks(3120),
+      ),
       body: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
