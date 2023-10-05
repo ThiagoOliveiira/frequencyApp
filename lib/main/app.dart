@@ -11,7 +11,10 @@ class App extends StatelessWidget {
     return GetMaterialApp(
       title: 'Flutter Demo',
       debugShowCheckedModeBanner: false,
-      theme: ThemeData(primarySwatch: Colors.blue, useMaterial3: true),
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+        useMaterial3: true,
+      ),
       getPages: [
         GetPage(name: '/', page: makeSplashPage),
         GetPage(name: '/login', page: makeLoginPage),

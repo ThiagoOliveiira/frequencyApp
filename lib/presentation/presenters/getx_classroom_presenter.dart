@@ -74,12 +74,6 @@ class GetxClassroomPresenter extends GetxController with LoadingManager implemen
       locationData = await location.getLocation();
 
       return AulaEntity.copy(aulaEntity, latitude: locationData.latitude.toString(), longitude: locationData.longitude.toString());
-
-      // for (var i = 0; i < 2; i++) {
-      //   location.onLocationChanged.listen((LocationData currentLocation) {
-      //     print(currentLocation.latitude);
-      //   });
-      // }
     }
   }
 
@@ -93,7 +87,7 @@ class GetxClassroomPresenter extends GetxController with LoadingManager implemen
         var aula = AulaEntity.copy(aulaData, iniciada: true);
         await classroomUsecase.startClass(aula);
         await getWifiNetworks(aulaEntity.id);
-        await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
+        await _loadAulasByIdProfessor();
 
         Get.to(() => ClassroomCodePage(aulaEntity: aula));
       }
@@ -109,7 +103,8 @@ class GetxClassroomPresenter extends GetxController with LoadingManager implemen
       isSetLoading = true;
       if (aulaEntity != null) {
         await classroomUsecase.endClass(AulaEntity.copy(aulaEntity, finalizada: true));
-        await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
+        await _loadAulasByIdProfessor();
+        // await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
       }
       isSetLoading = false;
     } catch (e) {
