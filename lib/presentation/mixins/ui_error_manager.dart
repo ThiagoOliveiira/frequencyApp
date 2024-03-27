@@ -12,8 +12,6 @@ mixin UIErrorManagerPresenter on GetxController {
     switch (domainError) {
       case DomainError.invalidCredentials:
         return UIError.invalidCredentials;
-      case DomainError.emailInUse:
-        return UIError.emailInUse;
       default:
         return UIError.unexpected;
     }

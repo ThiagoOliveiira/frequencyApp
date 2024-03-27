@@ -1,3 +1,5 @@
+import '../../domain/domain.dart';
+
 class WifiClassConfirmationModel {
   final int? id;
   final String? ssid1;
@@ -30,4 +32,12 @@ class WifiClassConfirmationModel {
       aulaId: json['aulaId'],
     );
   }
+
+  WifiClassConfirmationEntity toEntity() => WifiClassConfirmationEntity(
+        id: id,
+        aulaId: aulaId,
+        ssid1: ssid1,
+        ssid2: ssid2,
+        ssid3: ssid3,
+      );
 }

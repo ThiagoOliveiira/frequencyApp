@@ -12,19 +12,26 @@ class AulaModel {
   final String? nomeDisciplina;
   final bool? finalizada;
   final bool? iniciada;
+  final int? idProfessor;
+  final String? nomeProfessor;
+  final String? nomeBluetooth;
 
-  const AulaModel(
-      {required this.id,
-      required this.codigoAula,
-      required this.latitude,
-      required this.longitude,
-      required this.dataAula,
-      required this.idCurso,
-      required this.nomeCurso,
-      required this.idDisciplina,
-      required this.nomeDisciplina,
-      required this.finalizada,
-      required this.iniciada});
+  const AulaModel({
+    required this.id,
+    required this.codigoAula,
+    required this.latitude,
+    required this.longitude,
+    required this.dataAula,
+    required this.idCurso,
+    required this.nomeCurso,
+    required this.idDisciplina,
+    required this.nomeDisciplina,
+    required this.finalizada,
+    required this.iniciada,
+    required this.idProfessor,
+    required this.nomeProfessor,
+    required this.nomeBluetooth,
+  });
 
   static Map<String, dynamic> toMapDynamic(List<dynamic>? aulaEntity) => {
         "id": aulaEntity?.first,
@@ -38,6 +45,9 @@ class AulaModel {
         "nome_disciplina": aulaEntity?[8],
         "finalizada": aulaEntity?[9],
         "iniciada": aulaEntity?[10],
+        "idProfessor": aulaEntity?[11],
+        "nomeBluetooth": aulaEntity?[12],
+        "nomeProfessor": aulaEntity?.last,
       };
 
   factory AulaModel.fromJson(dynamic json) {
@@ -53,6 +63,9 @@ class AulaModel {
       nomeDisciplina: json['nomeDisciplina'],
       finalizada: json['finalizada'],
       iniciada: json['iniciada'],
+      idProfessor: json['idProfessor'],
+      nomeProfessor: json['nomeProfessor'],
+      nomeBluetooth: json['nomeBluetooth'],
     );
   }
 
@@ -68,5 +81,8 @@ class AulaModel {
         nomeDisciplina: nomeDisciplina,
         finalizada: finalizada,
         iniciada: iniciada,
+        idProfessor: idProfessor,
+        nomeProfessor: nomeProfessor,
+        nomeBluetooth: nomeBluetooth,
       );
 }

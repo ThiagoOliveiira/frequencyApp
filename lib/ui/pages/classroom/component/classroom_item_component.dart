@@ -58,6 +58,7 @@ class ClassroomItemComponent extends StatelessWidget {
           subtitle: Text(aula?.nomeDisciplina ?? 'Não informado', style: const TextStyle(color: AppColor.bluegreen600)),
           trailing: Column(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            crossAxisAlignment: CrossAxisAlignment.end,
             children: [
               Text(_handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada) ?? '', style: const TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)),
               Text(_handleDataTimeHour(aula?.dataAula) ?? '', style: const TextStyle(color: AppColor.bluegreen600))
@@ -99,6 +100,7 @@ class ClassroomItemComponent extends StatelessWidget {
 
   String? _handleDataTimeHour(DateTime? dataAula) {
     int currentHour = DateTime.now().hour;
-    return '${dataAula?.hour}:${dataAula?.minute}';
+
+    return '${dataAula?.hour}:${dataAula?.minute == 0 ? '${dataAula?.minute}0' : dataAula?.minute}';
   }
 }

@@ -12,19 +12,26 @@ class AulaEntity extends Equatable {
   final int? idDisciplina;
   final String? nomeDisciplina;
   final bool? iniciada;
+  final int? idProfessor;
+  final String? nomeProfessor;
+  final String? nomeBluetooth;
 
-  const AulaEntity(
-      {required this.id,
-      required this.codigoAula,
-      required this.latitude,
-      required this.longitude,
-      required this.dataAula,
-      required this.idCurso,
-      required this.nomeCurso,
-      required this.idDisciplina,
-      required this.nomeDisciplina,
-      required this.finalizada,
-      required this.iniciada});
+  const AulaEntity({
+    required this.id,
+    required this.codigoAula,
+    required this.latitude,
+    required this.longitude,
+    required this.dataAula,
+    required this.idCurso,
+    required this.nomeCurso,
+    required this.idDisciplina,
+    required this.nomeDisciplina,
+    required this.finalizada,
+    required this.iniciada,
+    required this.idProfessor,
+    required this.nomeProfessor,
+    required this.nomeBluetooth,
+  });
 
   static Map<String, dynamic> toMapDynamic(List<dynamic>? aulaEntity) => {
         "id": aulaEntity?.first,
@@ -38,6 +45,9 @@ class AulaEntity extends Equatable {
         "idDisciplina": aulaEntity?[8],
         "nomeDisciplina": aulaEntity?[9],
         "iniciada": aulaEntity?[10],
+        "idProfessor": aulaEntity?[11],
+        "nomeBluetooth": aulaEntity?[12],
+        "nomeProfessor": aulaEntity?.last,
       };
 
   static Map<String, dynamic> toMap(AulaEntity aulaEntity) => {
@@ -52,6 +62,9 @@ class AulaEntity extends Equatable {
         "nomeDisciplina": aulaEntity.nomeDisciplina,
         "finalizada": aulaEntity.finalizada,
         "iniciada": aulaEntity.iniciada,
+        "idProfessor": aulaEntity.idProfessor,
+        "nomeProfessor": aulaEntity.nomeProfessor,
+        "nomeBluetooth": aulaEntity.nomeBluetooth,
       };
 
   // Copy constructor
@@ -66,7 +79,10 @@ class AulaEntity extends Equatable {
       String? nomeCurso,
       int? idDisciplina,
       String? nomeDisciplina,
-      bool? iniciada})
+      bool? iniciada,
+      int? idProfessor,
+      String? nomeProfessor,
+      String? nomeBluetooth})
       : id = id ?? original?.id,
         finalizada = finalizada ?? original?.finalizada,
         codigoAula = codigoAula ?? original?.codigoAula,
@@ -77,8 +93,11 @@ class AulaEntity extends Equatable {
         nomeCurso = nomeCurso ?? original?.nomeCurso,
         idDisciplina = idDisciplina ?? original?.idDisciplina,
         nomeDisciplina = nomeDisciplina ?? original?.nomeDisciplina,
-        iniciada = iniciada ?? original?.iniciada;
+        iniciada = iniciada ?? original?.iniciada,
+        idProfessor = idProfessor ?? original?.idProfessor,
+        nomeProfessor = nomeProfessor ?? original?.nomeProfessor,
+        nomeBluetooth = nomeBluetooth ?? original?.nomeBluetooth;
 
   @override
-  List get props => [id, codigoAula, latitude, longitude, dataAula, idCurso, nomeCurso, idDisciplina, nomeDisciplina, finalizada];
+  List get props => [id, codigoAula, latitude, longitude, dataAula, idCurso, nomeCurso, idDisciplina, nomeDisciplina, finalizada, idProfessor, nomeProfessor, nomeBluetooth];
 }

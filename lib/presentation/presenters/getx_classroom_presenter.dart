@@ -1,3 +1,4 @@
+import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
 import 'package:wifi_scan/wifi_scan.dart';
@@ -6,7 +7,7 @@ import '../../domain/domain.dart';
 import '../../ui/ui.dart';
 import '../mixins/mixins.dart';
 
-class GetxClassroomPresenter extends GetxController with LoadingManager implements ClassroomPresenter {
+class GetxClassroomPresenter extends GetxController with LoadingManager, UIErrorManagerPresenter, FormManager implements ClassroomPresenter {
   final ClassroomUsecase classroomUsecase;
   final LoadCurrentAccount loadCurrentAccount;
   final WifiInformationUsecase wifiInformationUsecase;
@@ -83,17 +84,31 @@ class GetxClassroomPresenter extends GetxController with LoadingManager implemen
       isSetLoading = true;
 
       if (aulaEntity != null) {
+        final bluetoothState = FlutterBluePlus.isSupported;
+        await FlutterBluePlus.turnOn();
+
+        final deviceName = await FlutterBluePlus.adapterName; // Nome do bluetooth
         var aulaData = await getPositionFixed(aulaEntity);
-        var aula = AulaEntity.copy(aulaData, iniciada: true);
+        var aula = AulaEntity.copy(aulaData, iniciada: true, nomeBluetooth: deviceName);
         await classroomUsecase.startClass(aula);
-        await getWifiNetworks(aulaEntity.id);
+        WifiClassConfirmationEntity? wifiList = await getWifiNetworks(aulaEntity.id);
+        if (wifiList != null) {
+          await wifiInformationUsecase.saveNetworkInformation(wifiList);
+        }
+
         await _loadAulasByIdProfessor();
 
         Get.to(() => ClassroomCodePage(aulaEntity: aula));
       }
       isSetLoading = false;
-    } catch (e) {
-      Exception(e);
+    } on DomainError catch (error) {
+      isSetMainError = null;
+      switch (error) {
+        default:
+          isSetMainError = UIError.unexpected;
+          break;
+      }
+      isSetLoading = false;
     }
   }
 
@@ -107,49 +122,44 @@ class GetxClassroomPresenter extends GetxController with LoadingManager implemen
         // await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
       }
       isSetLoading = false;
-    } catch (e) {
-      Exception(e);
+    } on DomainError catch (error) {
+      isSetMainError = null;
+      switch (error) {
+        default:
+          isSetMainError = UIError.unexpected;
+          break;
+      }
+      isSetLoading = false;
     }
   }
 
   @override
-  Future<void> getWifiNetworks(int? aulaId) async {
+  Future<WifiClassConfirmationEntity?> getWifiNetworks(int? aulaId) async {
     try {
       Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
       Rx<List<String>> listSSID = Rx([]);
+      listSSID.value.clear();
 
-      // check platform support and necessary requirements
       final can = await WiFiScan.instance.canStartScan(askPermissions: true);
       if (can == CanStartScan.yes) {
-        final isScanning = await WiFiScan.instance.startScan();
-        print(isScanning);
+        await WiFiScan.instance.startScan();
 
-        final list = await WiFiScan.instance.getScannedResults();
-
-        print(list.map((e) => e.ssid));
+        accessPoints.value = await WiFiScan.instance.getScannedResults();
       }
 
-      // final can = await WiFiScan.instance.canGetScannedResults(askPermissions: true);
-      // if (can == CanGetScannedResults.yes) {
-      //   // print(can);
-      //   accessPoints.value = WiFiScan.instance.onScannedResultsAvailable.listen((result) {
-      //     print(result);
-      //   });
-      // }
+      listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
 
-      // listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
+      listSSID.value.removeWhere((element) => element.isEmpty);
 
-      // listSSID.value.removeWhere((element) => element.isEmpty);
-
-      // print(listSSID.value);
-
-      // var wifiEntity = WifiClassConfirmationEntity(ssid1: listSSID.value.first, ssid2: listSSID.value[1], ssid3: listSSID.value.last, aulaId: aulaId, id: null);
-
-      // print(wifiEntity);
-
-      // wifiInformationUsecase.saveNetworkInformation(wifiEntity);
-    } catch (e) {
-      print("Erro ao obter a lista de redes Wi-Fi: $e");
+      return WifiClassConfirmationEntity(ssid1: listSSID.value.first, ssid2: listSSID.value[1], ssid3: listSSID.value.last, aulaId: aulaId, id: null);
+    } on DomainError catch (error) {
+      isSetMainError = null;
+      switch (error) {
+        default:
+          isSetMainError = UIError.unexpected;
+          break;
+      }
+      isSetLoading = false;
     }
   }
 

@@ -7,13 +7,21 @@ class DefaultBottomNavigationBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return NavigationBar(
-      onDestinationSelected: (int index) => _handleNavigation(index),
-      selectedIndex: currentPageIndex,
-      destinations: const [
-        NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
-        NavigationDestination(icon: Icon(Icons.book), label: 'Aulas'),
-      ],
+    return ClipRRect(
+      borderRadius: const BorderRadius.only(topLeft: Radius.circular(20), topRight: Radius.circular(20)),
+      child: NavigationBar(
+        height: 65,
+        onDestinationSelected: (int index) => _handleNavigation(index),
+        selectedIndex: currentPageIndex,
+        backgroundColor: Colors.blueGrey[100],
+        surfaceTintColor: Colors.white,
+        indicatorColor: Colors.white,
+        elevation: 5,
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home), label: 'Home'),
+          NavigationDestination(icon: Icon(Icons.book), label: 'Aulas'),
+        ],
+      ),
     );
   }
 

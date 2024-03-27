@@ -31,7 +31,7 @@ class ClassroomCodePage extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.center,
                           mainAxisAlignment: MainAxisAlignment.center,
                           children: [
-                            Text(aulaEntity?.finalizada == true ? 'Esta aula já foi encerrada' : 'Informe o código abaixo com os alunos:', style: const TextStyle(fontSize: 15)),
+                            Text(aulaEntity?.finalizada == true ? 'Esta aula já foi encerrada' : 'Informe o código abaixo para os alunos:', style: const TextStyle(fontSize: 15)),
                             aulaEntity?.finalizada == true
                                 ? const SizedBox()
                                 : Text(aulaEntity?.codigoAula ?? '', style: TextStyle(fontSize: Get.size.width * 0.12, fontWeight: FontWeight.bold, color: AppColor.green400)),

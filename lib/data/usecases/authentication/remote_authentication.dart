@@ -9,14 +9,14 @@ class RemoteAuthentication extends Authentication {
   @override
   Future<AccountEntity?> auth(AuthenticationParams params) async {
     try {
-      final httpResponse = await postDatabase
-          .post(query: 'SELECT * FROM USUARIO WHERE matricula = @aMatricula and senha = @aSenha', substitutionValues: {"aMatricula": params.matricula, "aSenha": params.senha});
+      final httpResponse =
+          await postDatabase.post(query: 'SELECT * FROM USUARIO WHERE matricula = @aMatricula and senha = @aSenha', substitutionValues: {"aMatricula": params.matricula, "aSenha": params.senha});
 
       if (httpResponse == null) DomainError.invalidCredentials;
 
       final resultJson = httpResponse.map((e) => AccountEntity.toMapDynamic(e)).toList();
 
-      return RemoteAccountModel.fromJson(resultJson.first).toEntity();
+      return resultJson != null && resultJson.isNotEmpty ? RemoteAccountModel.fromJson(resultJson.first).toEntity() : null;
     } on HttpError catch (error) {
       throw error == HttpError.unauthorized ? DomainError.invalidCredentials : DomainError.unexpected;
     }

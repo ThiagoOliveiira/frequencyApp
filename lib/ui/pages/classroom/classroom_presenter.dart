@@ -14,5 +14,5 @@ abstract class ClassroomPresenter {
   Future<void> endClass(AulaEntity? aulaEntity);
 
   Future<AulaEntity?> getPositionFixed(AulaEntity? aulaEntity);
-  Future<void> getWifiNetworks(int? aulaId);
+  Future<WifiClassConfirmationEntity?> getWifiNetworks(int? aulaId);
 }
