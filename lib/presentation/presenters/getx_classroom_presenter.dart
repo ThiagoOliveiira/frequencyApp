@@ -147,6 +147,29 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
         accessPoints.value = await WiFiScan.instance.getScannedResults();
       }
 
+      // final networks = await WifiFlutter.wifiNetworks;
+
+      // print(networks.map((e) => e.ssid));
+
+      // WifiInfoWrapper? wifiObject;
+
+      // wifiObject = await WifiInfoPlugin.wifiDetails;
+      // print(wifiObject?.linkSpeed);
+
+      // Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
+      // Rx<List<String>> listSSID = Rx([]);
+
+      // // check platform support and necessary requirements
+      // final can = await WiFiScan.instance.canStartScan();
+      // if (can == CanStartScan.yes) {
+      //   final isScanning = await WiFiScan.instance.startScan();
+      //   print(isScanning);
+
+      //   final list = await WiFiScan.instance.getScannedResults().then((value) => print(value.map((e) => e.ssid)));
+
+      // print(list.map((e) => e.ssid));
+      // }
+
       listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
 
       listSSID.value.removeWhere((element) => element.isEmpty);
