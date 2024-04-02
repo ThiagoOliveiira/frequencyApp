@@ -8,6 +8,7 @@ abstract class HomePresenter {
   Rx<UserType?> get userType;
   Rx<AccountEntity?> get accountEntity;
   Rx<AulaEntity?> get aulaEntity;
+  Rx<List<AulaEntity>?> get aulas;
 
   Rxn<UIError?> get mainError;
   Rxn<UIError?> get codeClassError;

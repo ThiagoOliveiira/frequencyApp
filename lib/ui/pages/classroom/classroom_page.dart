@@ -32,10 +32,7 @@ class ClassroomPage extends StatelessWidget {
                       children: [
                         const Padding(
                           padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                          child: Text(
-                            'Próximas aulas',
-                            style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.bluegreen),
-                          ),
+                          child: Text('Próximas aulas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.bluegreen)),
                         ),
                         Expanded(
                           child: ListView.builder(
@@ -50,10 +47,7 @@ class ClassroomPage extends StatelessWidget {
                         presenter.aulaClosed.value != null && presenter.aulaClosed.value?.isNotEmpty == true
                             ? const Padding(
                                 padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
-                                child: Text(
-                                  'Aulas encerradas',
-                                  style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.bluegreen),
-                                ),
+                                child: Text('Aulas encerradas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.bluegreen)),
                               )
                             : const SizedBox(),
                         presenter.aulaClosed.value != null && presenter.aulaClosed.value?.isNotEmpty == true

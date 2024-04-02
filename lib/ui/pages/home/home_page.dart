@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:get/get.dart';
 
+import '../../../domain/domain.dart';
 import '../../ui.dart';
+import '../../utils/string_utils.dart';
 
 class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
   final HomePresenter presenter;
@@ -104,43 +106,105 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                           ],
                         ),
                 )
-              : Column(
-                  children: [
-                    Card(
-                      child: Column(
-                        children: [
-                          Container(
-                            color: AppColor.coral400,
-                            padding: const EdgeInsets.all(10),
-                            child: const Row(
-                              children: [
-                                Text('Suas próximas aulas:'),
-                              ],
-                            ),
+              : presenter.isLoading.value
+                  ? const Center(child: CircularProgressIndicator())
+                  : Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Padding(
+                          padding: EdgeInsets.only(top: 20, left: 20),
+                          child: Text('Professor, estas são suas\npróximas aulas:', style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold, color: AppColor.bluegreen600)),
+                        ),
+                        Expanded(
+                          child: ListView.builder(
+                            itemCount: presenter.aulas.value?.length ?? 0,
+                            physics: const ClampingScrollPhysics(),
+                            shrinkWrap: true,
+                            padding: const EdgeInsets.only(bottom: 20),
+                            itemBuilder: (context, index) {
+                              AulaEntity? aula = presenter.aulas.value?[index];
+                              return Expanded(
+                                child: Container(
+                                  margin: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 0),
+                                  decoration: BoxDecoration(
+                                    color: Colors.blueGrey[100]?.withOpacity(0.6),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.end,
+                                    children: [
+                                      Container(
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        decoration: const BoxDecoration(color: AppColor.bluegreen, borderRadius: BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+                                        child: Row(children: [Text(aula?.nomeDisciplina ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white))]),
+                                      ),
+                                      Padding(
+                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                        child: Column(
+                                          children: [
+                                            ItemCardHome(title: 'Professor:', description: aula?.nomeProfessor),
+                                            ItemCardHome(title: 'Curso:', description: aula?.nomeCurso),
+                                            ItemCardHome(title: 'Disciplina:', description: aula?.nomeDisciplina),
+                                            ItemCardHome(title: 'Data:', description: handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada)),
+                                          ],
+                                        ),
+                                      ),
+                                      InkWell(
+                                        highlightColor: AppColor.bluegreen,
+                                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
+                                        onTap: () {},
+                                        child: Padding(
+                                          padding: const EdgeInsets.only(left: 3, top: 3),
+                                          child: Container(
+                                            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                                            decoration: BoxDecoration(
+                                              color: Colors.green[600],
+                                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
+                                            ),
+                                            child: const Row(
+                                              mainAxisAlignment: MainAxisAlignment.end,
+                                              mainAxisSize: MainAxisSize.min,
+                                              children: [
+                                                Text('Iniciar aula', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                                SizedBox(width: 5),
+                                                Icon(Icons.play_arrow_rounded, color: Colors.white),
+                                              ],
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              );
+                            },
                           ),
-                          Row(
-                            children: [
-                              const Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text('Nome curso'),
-                                  Text('Nome disciplina'),
-                                  Text('Data e hora'),
-                                ],
-                              ),
-                              ElevatedButton(
-                                onPressed: () {},
-                                child: const Text('Iniciar aula'),
-                              ),
-                            ],
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                );
+                        ),
+                      ],
+                    );
         }),
       ),
     );
+  }
+}
+
+class ItemCardHome extends StatelessWidget {
+  final String title;
+  final String? description;
+
+  const ItemCardHome({super.key, required this.title, required this.description});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(children: [
+      Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+          const SizedBox(width: 4),
+          Text(description ?? 'N/I'),
+        ],
+      )
+    ]);
   }
 }

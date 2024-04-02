@@ -44,16 +44,56 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   Rx<double?> currentLong = Rx(null);
 
   @override
+  Rx<List<AulaEntity>?> aulas = Rx(null);
+
+  @override
   void onInit() async {
     await loadUserInfo();
     super.onInit();
   }
 
   Future<void> loadUserInfo() async {
+    isSetLoading = true;
+
     accountEntity.value = await loadCurrentAccount.loadUserEntity();
 
-    if (accountEntity.value != null) userType.value = accountEntity.value?.tipo?.contains('aluno') == true ? UserType.aluno : UserType.professor;
+    if (accountEntity.value != null) {
+      userType.value = accountEntity.value?.tipo?.contains('aluno') == true ? UserType.aluno : UserType.professor;
+      if (userType.value == UserType.professor) {
+        await _loadAulasByIdProfessor();
+      }
+    }
+
     await requestLocationPermition();
+    isSetLoading = false;
+  }
+
+  Future<void> _loadAulasByIdProfessor() async {
+    try {
+      isSetLoading = true;
+      if (accountEntity.value != null) {
+        aulas.value = await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
+
+        aulas.value = aulas.value?.where((aula) => aula.finalizada != true).toList();
+
+        // await _sortedByMostRecentFinished();
+        _sortedByMostRecent();
+      }
+      isSetLoading = false;
+    } catch (e) {
+      Exception(e);
+    }
+  }
+
+  void _sortedByMostRecent() {
+    final dateNow = DateTime.now();
+    if (aulas.value != null) {
+      aulas.value?.sort((a, b) {
+        final list1 = dateNow.difference(a.dataAula!).inDays.abs();
+        final list2 = dateNow.difference(b.dataAula!).inDays.abs();
+        return list1.compareTo(list2);
+      });
+    }
   }
 
   @override
@@ -65,8 +105,8 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
         title: '',
         radius: 15,
         barrierDismissible: false,
-        content: Column(
-          children: const [
+        content: const Column(
+          children: [
             SizedBox(height: 30, width: 30, child: CircularProgressIndicator(strokeWidth: 2, color: AppColor.bluegreen600)),
             SizedBox(height: 20),
             Text('Saindo...', style: TextStyle(fontWeight: FontWeight.w600, color: AppColor.bluegreen600))
