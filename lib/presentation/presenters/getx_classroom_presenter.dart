@@ -48,9 +48,19 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
       isSetLoading = true;
       if (accountEntity.value != null) {
         aulaEntity.value = await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
+        DateTime dataAtual = DateTime.now();
+        dataAtual = DateTime(dataAtual.year, dataAtual.month, dataAtual.day);
 
         aulaNotClosed.value = aulaEntity.value?.where((aula) => aula.finalizada != true).toList();
-        aulaClosed.value = aulaEntity.value?.where((aula) => aula.finalizada == true).toList();
+        aulaClosed.value = aulaEntity.value?.where((aula) => aula.finalizada == true || aula.dataAula!.isBefore(dataAtual)).toList();
+
+        if (aulaNotClosed.value != null) {
+          aulaNotClosed.value = aulaNotClosed.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
+        }
+
+        if (aulaClosed.value != null) {
+          aulaClosed.value = aulaClosed.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
+        }
 
         await _sortedByMostRecentFinished();
         _sortedByMostRecent();
@@ -198,7 +208,9 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
   }
 
   Future<void> _sortedByMostRecentFinished() async {
-    final dateNow = DateTime.now();
+    DateTime dateNow = DateTime.now();
+    dateNow = DateTime(dateNow.year, dateNow.month, dateNow.day);
+
     if (aulaNotClosed.value != null) {
       aulaNotClosed.value?.sort((a, b) {
         final list1 = dateNow.difference(a.dataAula!).inDays.abs();

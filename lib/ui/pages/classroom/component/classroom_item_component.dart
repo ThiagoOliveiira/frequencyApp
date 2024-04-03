@@ -13,39 +13,39 @@ class ClassroomItemComponent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    GlobalKey slideKey = GlobalKey();
     final presenter = Get.find<ClassroomPresenter>();
     return Padding(
       padding: const EdgeInsets.only(bottom: 3),
       child: Slidable(
-        key: const ValueKey(0),
-        endActionPane: aula?.finalizada == false
-            ? ActionPane(
-                motion: const ScrollMotion(),
-                extentRatio: 0.38,
-                children: [
-                  aula?.iniciada != true
-                      ? SlidableAction(
-                          onPressed: (context) async => await presenter.startClass(aula),
-                          backgroundColor: AppColor.green300,
-                          foregroundColor: Colors.white,
-                          icon: Icons.play_arrow,
-                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
-                          label: 'Iniciar aula',
-                        )
-                      : const SizedBox(),
-                  aula?.finalizada == false && aula?.iniciada == true
-                      ? SlidableAction(
-                          onPressed: (context) async => await presenter.endClass(aula),
-                          backgroundColor: AppColor.grey900,
-                          foregroundColor: Colors.white,
-                          icon: Icons.close,
-                          borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
-                          label: 'Finalizar aula',
-                        )
-                      : const SizedBox(),
-                ],
-              )
-            : null,
+        key: slideKey,
+        enabled: aula?.finalizada == false && aula?.dataAula?.difference(DateTime.now()).inDays == 0,
+        endActionPane: ActionPane(
+          motion: const ScrollMotion(),
+          extentRatio: 0.38,
+          children: [
+            aula?.iniciada != true
+                ? SlidableAction(
+                    onPressed: (context) async => await presenter.startClass(aula),
+                    backgroundColor: AppColor.green300,
+                    foregroundColor: Colors.white,
+                    icon: Icons.play_arrow,
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                    label: 'Iniciar aula',
+                  )
+                : const SizedBox(),
+            aula?.finalizada == false && aula?.iniciada == true
+                ? SlidableAction(
+                    onPressed: (context) async => await presenter.endClass(aula),
+                    backgroundColor: AppColor.grey900,
+                    foregroundColor: Colors.white,
+                    icon: Icons.close,
+                    borderRadius: const BorderRadius.only(topLeft: Radius.circular(10), bottomLeft: Radius.circular(10)),
+                    label: 'Finalizar aula',
+                  )
+                : const SizedBox(),
+          ],
+        ),
         child: ListTile(
           onTap: aula?.iniciada == true ? () => Get.to(() => ClassroomCodePage(aulaEntity: aula!)) : null,
           leading: Container(
@@ -61,7 +61,8 @@ class ClassroomItemComponent extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              Text(handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada) ?? '', style: const TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)),
+              Text(handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada) ?? '',
+                  style: const TextStyle(color: AppColor.bluegreen600, fontWeight: FontWeight.bold)),
               Text(handleDataTimeHour(aula?.dataAula) ?? '', style: const TextStyle(color: AppColor.bluegreen600))
             ],
           ),

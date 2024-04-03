@@ -18,7 +18,8 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   final ClassroomUsecase classroomUsecase;
   final WifiInformationUsecase wifiInformationUsecase;
 
-  GetxHomePresenter({required this.loadCurrentAccount, required this.deleteAccount, required this.validation, required this.classroomUsecase, required this.wifiInformationUsecase});
+  GetxHomePresenter(
+      {required this.loadCurrentAccount, required this.deleteAccount, required this.validation, required this.classroomUsecase, required this.wifiInformationUsecase});
 
   String? _codeClass;
   Rx<bool>? isSameBluetooth = false.obs;
@@ -76,7 +77,13 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
 
         aulas.value = aulas.value?.where((aula) => aula.finalizada != true).toList();
 
-        // await _sortedByMostRecentFinished();
+        if (aulas.value != null) {
+          DateTime dataAtual = DateTime.now();
+          dataAtual = DateTime(dataAtual.year, dataAtual.month, dataAtual.day);
+
+          // Filtrando apenas as datas iguais ou posteriores à data atual
+          aulas.value = aulas.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
+        }
         _sortedByMostRecent();
       }
       isSetLoading = false;
@@ -292,9 +299,9 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
                 overlayColor: MaterialStatePropertyAll(AppColor.grey500),
                 padding: MaterialStatePropertyAll((EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
               ),
-              child: Row(
+              child: const Row(
                 mainAxisAlignment: MainAxisAlignment.center,
-                children: const [
+                children: [
                   Text('Fechar', style: TextStyle(color: AppColor.bluegreen600, fontSize: 18)),
                 ],
               ),
@@ -385,7 +392,8 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
         const int earthRadius = 6371000; // Raio da Terra em metros
         double dLat = (currentLat.value! - latitudeClass) * (3.141592653589793 / 180);
         double dLon = (currentLong.value! - longitudeClass) * (3.141592653589793 / 180);
-        double a = sin(dLat / 2) * sin(dLat / 2) + cos(latitudeClass * (3.141592653589793 / 180)) * cos(currentLat.value! * (3.141592653589793 / 180)) * sin(dLon / 2) * sin(dLon / 2);
+        double a =
+            sin(dLat / 2) * sin(dLat / 2) + cos(latitudeClass * (3.141592653589793 / 180)) * cos(currentLat.value! * (3.141592653589793 / 180)) * sin(dLon / 2) * sin(dLon / 2);
         double c = 2 * atan2(sqrt(a), sqrt(1 - a));
         double distance = earthRadius * c;
         // print("distance -----------------------------------------------------");

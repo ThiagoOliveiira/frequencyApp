@@ -1,12 +1,14 @@
 String? handleDataTimeDay(DateTime? dataAula, {bool? iniciada, bool? finalizada}) {
-  int currentDay = DateTime.now().day;
+  DateTime currentDay = DateTime.now();
+  currentDay = DateTime(currentDay.year, currentDay.month, currentDay.day);
+
   if (dataAula != null) {
     if (iniciada == true && finalizada != true) {
       return 'Iniciada';
     } else if (finalizada == true) {
       return 'Encerrada';
     } else {
-      if (dataAula.day == currentDay) {
+      if (dataAula.difference(currentDay).inDays == 0) {
         return 'Hoje';
       } else {
         return 'Dia ${handleDate(dataAula.day)}/${handleDate(dataAula.month)}';

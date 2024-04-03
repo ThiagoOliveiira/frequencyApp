@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frequency_app/ui/utils/string_utils.dart';
 import 'package:get/get.dart';
 
 import '../../../domain/domain.dart';
 import '../../ui.dart';
-import '../../utils/string_utils.dart';
 
 class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
   final HomePresenter presenter;
@@ -58,8 +58,10 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                               decoration: InputDecoration(
                                   isDense: true,
                                   labelText: 'Código da aula',
-                                  enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
-                                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(width: 2, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
+                                  enabledBorder:
+                                      const OutlineInputBorder(borderSide: BorderSide(width: 1, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
+                                  focusedBorder:
+                                      const OutlineInputBorder(borderSide: BorderSide(width: 2, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
                                   errorBorder: const OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red), borderRadius: BorderRadius.all(Radius.circular(15))),
                                   border: const OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red), borderRadius: BorderRadius.all(Radius.circular(15))),
                                   floatingLabelStyle: TextStyle(color: presenter.codeClassError.value != null ? Colors.red : AppColor.bluegreen, fontWeight: FontWeight.w600),
@@ -117,64 +119,69 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                         ),
                         Expanded(
                           child: ListView.builder(
-                            itemCount: presenter.aulas.value?.length ?? 0,
+                            itemCount: presenter.aulas.value?.isNotEmpty == true ? 4 : 0,
                             physics: const ClampingScrollPhysics(),
                             shrinkWrap: true,
                             padding: const EdgeInsets.only(bottom: 20),
                             itemBuilder: (context, index) {
                               AulaEntity? aula = presenter.aulas.value?[index];
-                              return Expanded(
-                                child: Container(
-                                  margin: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 0),
-                                  decoration: BoxDecoration(
-                                    color: Colors.blueGrey[100]?.withOpacity(0.6),
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  child: Column(
-                                    crossAxisAlignment: CrossAxisAlignment.end,
-                                    children: [
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                                        decoration: const BoxDecoration(color: AppColor.bluegreen, borderRadius: BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8))),
-                                        child: Row(children: [Text(aula?.nomeDisciplina ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white))]),
+                              return Container(
+                                margin: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 0),
+                                decoration: BoxDecoration(
+                                  color: Colors.blueGrey[100]?.withOpacity(0.6),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.end,
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                      decoration: const BoxDecoration(
+                                          color: AppColor.bluegreen, borderRadius: BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+                                      child:
+                                          Row(children: [Text(aula?.nomeDisciplina ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white))]),
+                                    ),
+                                    Padding(
+                                      padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
+                                      child: Column(
+                                        children: [
+                                          ItemCardHome(title: 'Professor:', description: aula?.nomeProfessor),
+                                          ItemCardHome(title: 'Curso:', description: aula?.nomeCurso),
+                                          ItemCardHome(title: 'Disciplina:', description: aula?.nomeDisciplina),
+                                          ItemCardHome(
+                                              title: 'Data:',
+                                              description:
+                                                  "${handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada)} às ${handleDataTimeHour(aula?.dataAula)}"),
+                                        ],
                                       ),
-                                      Padding(
-                                        padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                                        child: Column(
-                                          children: [
-                                            ItemCardHome(title: 'Professor:', description: aula?.nomeProfessor),
-                                            ItemCardHome(title: 'Curso:', description: aula?.nomeCurso),
-                                            ItemCardHome(title: 'Disciplina:', description: aula?.nomeDisciplina),
-                                            ItemCardHome(title: 'Data:', description: handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada)),
-                                          ],
-                                        ),
-                                      ),
-                                      InkWell(
-                                        highlightColor: AppColor.bluegreen,
-                                        borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
-                                        onTap: () {},
-                                        child: Padding(
-                                          padding: const EdgeInsets.only(left: 3, top: 3),
-                                          child: Container(
-                                            padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
-                                            decoration: BoxDecoration(
-                                              color: Colors.green[600],
-                                              borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
+                                    ),
+                                    aula?.dataAula?.difference(DateTime.now()).inDays == 0
+                                        ? InkWell(
+                                            highlightColor: AppColor.bluegreen,
+                                            borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
+                                            onTap: () {},
+                                            child: Padding(
+                                              padding: const EdgeInsets.only(left: 3, top: 3),
+                                              child: Container(
+                                                padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                                                decoration: BoxDecoration(
+                                                  color: Colors.green[600],
+                                                  borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
+                                                ),
+                                                child: const Row(
+                                                  mainAxisAlignment: MainAxisAlignment.end,
+                                                  mainAxisSize: MainAxisSize.min,
+                                                  children: [
+                                                    Text('Iniciar aula', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                                    SizedBox(width: 5),
+                                                    Icon(Icons.play_arrow_rounded, color: Colors.white),
+                                                  ],
+                                                ),
+                                              ),
                                             ),
-                                            child: const Row(
-                                              mainAxisAlignment: MainAxisAlignment.end,
-                                              mainAxisSize: MainAxisSize.min,
-                                              children: [
-                                                Text('Iniciar aula', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
-                                                SizedBox(width: 5),
-                                                Icon(Icons.play_arrow_rounded, color: Colors.white),
-                                              ],
-                                            ),
-                                          ),
-                                        ),
-                                      ),
-                                    ],
-                                  ),
+                                          )
+                                        : const SizedBox(),
+                                  ],
                                 ),
                               );
                             },
@@ -187,6 +194,34 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
     );
   }
 }
+
+// String? handleDataTimeDay(DateTime? dataAula, {bool? iniciada, bool? finalizada}) {
+//   int currentDay = DateTime.now().day;
+//   if (dataAula != null) {
+//     if (iniciada == true && finalizada != true) {
+//       return 'Iniciada';
+//     } else if (finalizada == true) {
+//       return 'Encerrada';
+//     } else {
+//       if (dataAula.day == currentDay) {
+//         return 'Hoje';
+//       } else {
+//         return 'Dia ${handleDate(dataAula.day)}/${handleDate(dataAula.month)}';
+//       }
+//     }
+//   }
+//   return null;
+// }
+
+// String? handleDate(int? info) {
+//   if (info != null) {
+//     if (info >= 0 && info <= 9) {
+//       return '0$info';
+//     }
+//     return info.toString();
+//   }
+//   return null;
+// }
 
 class ItemCardHome extends StatelessWidget {
   final String title;
