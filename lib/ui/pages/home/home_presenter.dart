@@ -22,5 +22,6 @@ abstract class HomePresenter {
   void validateCodeClass(String codeClass);
   Future<void> requestClassByCode();
   Future<void> confirmPresence();
+  Future<void> startClass(AulaEntity? aulaEntity);
   Future<void> teste();
 }

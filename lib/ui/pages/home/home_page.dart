@@ -15,10 +15,6 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
     return Obx(
       () => Scaffold(
         bottomNavigationBar: const DefaultBottomNavigationBar(currentPageIndex: 0),
-        // floatingActionButton: FloatingActionButton(
-        //   onPressed: () async => await presenter.teste(),
-        //   child: Text('TESTE'),
-        // ),
         appBar: AppBar(
           backgroundColor: Colors.blueGrey[100],
           surfaceTintColor: Colors.white,
@@ -47,7 +43,7 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
               ? Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 15),
                   child: presenter.isLoading.value
-                      ? const Center(child: CircularProgressIndicator())
+                      ? const Center(child: CircularProgressIndicator(color: AppColor.bluegreen600))
                       : Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
@@ -58,10 +54,8 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                               decoration: InputDecoration(
                                   isDense: true,
                                   labelText: 'Código da aula',
-                                  enabledBorder:
-                                      const OutlineInputBorder(borderSide: BorderSide(width: 1, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
-                                  focusedBorder:
-                                      const OutlineInputBorder(borderSide: BorderSide(width: 2, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
+                                  enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
+                                  focusedBorder: const OutlineInputBorder(borderSide: BorderSide(width: 2, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
                                   errorBorder: const OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red), borderRadius: BorderRadius.all(Radius.circular(15))),
                                   border: const OutlineInputBorder(borderSide: BorderSide(width: 2, color: Colors.red), borderRadius: BorderRadius.all(Radius.circular(15))),
                                   floatingLabelStyle: TextStyle(color: presenter.codeClassError.value != null ? Colors.red : AppColor.bluegreen, fontWeight: FontWeight.w600),
@@ -109,7 +103,7 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                         ),
                 )
               : presenter.isLoading.value
-                  ? const Center(child: CircularProgressIndicator())
+                  ? const Center(child: CircularProgressIndicator(color: AppColor.bluegreen600))
                   : Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -136,10 +130,8 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                                   children: [
                                     Container(
                                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
-                                      decoration: const BoxDecoration(
-                                          color: AppColor.bluegreen, borderRadius: BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8))),
-                                      child:
-                                          Row(children: [Text(aula?.nomeDisciplina ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white))]),
+                                      decoration: const BoxDecoration(color: AppColor.bluegreen, borderRadius: BorderRadius.only(topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+                                      child: Row(children: [Text(aula?.nomeDisciplina ?? '', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16, color: Colors.white))]),
                                     ),
                                     Padding(
                                       padding: const EdgeInsets.symmetric(vertical: 10, horizontal: 8),
@@ -150,16 +142,15 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                                           ItemCardHome(title: 'Disciplina:', description: aula?.nomeDisciplina),
                                           ItemCardHome(
                                               title: 'Data:',
-                                              description:
-                                                  "${handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada)} às ${handleDataTimeHour(aula?.dataAula)}"),
+                                              description: "${handleDataTimeDay(aula?.dataAula, iniciada: aula?.iniciada, finalizada: aula?.finalizada)} às ${handleDataTimeHour(aula?.dataAula)}"),
                                         ],
                                       ),
                                     ),
-                                    aula?.dataAula?.difference(DateTime.now()).inDays == 0
+                                    aula?.dataAula?.difference(DateTime.now()).inDays == 0 && aula?.iniciada != true
                                         ? InkWell(
                                             highlightColor: AppColor.bluegreen,
                                             borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
-                                            onTap: () {},
+                                            onTap: () async => await presenter.startClass(aula),
                                             child: Padding(
                                               padding: const EdgeInsets.only(left: 3, top: 3),
                                               child: Container(
@@ -180,7 +171,30 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                                               ),
                                             ),
                                           )
-                                        : const SizedBox(),
+                                        : aula?.iniciada == true
+                                            ? InkWell(
+                                                onTap: aula?.iniciada == true ? () => Get.to(() => ClassroomCodePage(aulaEntity: aula!)) : null,
+                                                child: Padding(
+                                                  padding: const EdgeInsets.only(left: 3, top: 3),
+                                                  child: Container(
+                                                    padding: const EdgeInsets.symmetric(vertical: 5, horizontal: 15),
+                                                    decoration: const BoxDecoration(
+                                                      color: AppColor.blue800,
+                                                      borderRadius: BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
+                                                    ),
+                                                    child: const Row(
+                                                      mainAxisAlignment: MainAxisAlignment.end,
+                                                      mainAxisSize: MainAxisSize.min,
+                                                      children: [
+                                                        Text('Aula em andamento', style: TextStyle(color: Colors.white, fontWeight: FontWeight.w600)),
+                                                        SizedBox(width: 5),
+                                                        Icon(Icons.hourglass_bottom_rounded, color: Colors.white),
+                                                      ],
+                                                    ),
+                                                  ),
+                                                ),
+                                              )
+                                            : const SizedBox()
                                   ],
                                 ),
                               );

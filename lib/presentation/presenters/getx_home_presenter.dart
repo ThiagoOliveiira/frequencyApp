@@ -18,8 +18,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   final ClassroomUsecase classroomUsecase;
   final WifiInformationUsecase wifiInformationUsecase;
 
-  GetxHomePresenter(
-      {required this.loadCurrentAccount, required this.deleteAccount, required this.validation, required this.classroomUsecase, required this.wifiInformationUsecase});
+  GetxHomePresenter({required this.loadCurrentAccount, required this.deleteAccount, required this.validation, required this.classroomUsecase, required this.wifiInformationUsecase});
 
   String? _codeClass;
   Rx<bool>? isSameBluetooth = false.obs;
@@ -392,8 +391,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
         const int earthRadius = 6371000; // Raio da Terra em metros
         double dLat = (currentLat.value! - latitudeClass) * (3.141592653589793 / 180);
         double dLon = (currentLong.value! - longitudeClass) * (3.141592653589793 / 180);
-        double a =
-            sin(dLat / 2) * sin(dLat / 2) + cos(latitudeClass * (3.141592653589793 / 180)) * cos(currentLat.value! * (3.141592653589793 / 180)) * sin(dLon / 2) * sin(dLon / 2);
+        double a = sin(dLat / 2) * sin(dLat / 2) + cos(latitudeClass * (3.141592653589793 / 180)) * cos(currentLat.value! * (3.141592653589793 / 180)) * sin(dLon / 2) * sin(dLon / 2);
         double c = 2 * atan2(sqrt(a), sqrt(1 - a));
         double distance = earthRadius * c;
         // print("distance -----------------------------------------------------");
@@ -411,6 +409,110 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
           isSetMainError = UIError.unexpected;
           break;
       }
+    }
+  }
+
+  @override
+  Future<AulaEntity?> getPositionFixed(AulaEntity? aulaEntity) async {
+    Location location = Location();
+    PermissionStatus permissionGranted;
+    LocationData locationData;
+
+    permissionGranted = await location.hasPermission();
+
+    if (permissionGranted == PermissionStatus.denied || permissionGranted != PermissionStatus.granted) {
+      permissionGranted = await location.requestPermission();
+    } else {
+      locationData = await location.getLocation();
+
+      return AulaEntity.copy(aulaEntity, latitude: locationData.latitude.toString(), longitude: locationData.longitude.toString());
+    }
+  }
+
+  @override
+  Future<WifiClassConfirmationEntity?> getWifiNetworks(int? aulaId) async {
+    try {
+      Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
+      Rx<List<String>> listSSID = Rx([]);
+      listSSID.value.clear();
+
+      final can = await WiFiScan.instance.canStartScan(askPermissions: true);
+      if (can == CanStartScan.yes) {
+        await WiFiScan.instance.startScan();
+
+        accessPoints.value = await WiFiScan.instance.getScannedResults();
+      }
+
+      // final networks = await WifiFlutter.wifiNetworks;
+
+      // print(networks.map((e) => e.ssid));
+
+      // WifiInfoWrapper? wifiObject;
+
+      // wifiObject = await WifiInfoPlugin.wifiDetails;
+      // print(wifiObject?.linkSpeed);
+
+      // Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
+      // Rx<List<String>> listSSID = Rx([]);
+
+      // // check platform support and necessary requirements
+      // final can = await WiFiScan.instance.canStartScan();
+      // if (can == CanStartScan.yes) {
+      //   final isScanning = await WiFiScan.instance.startScan();
+      //   print(isScanning);
+
+      //   final list = await WiFiScan.instance.getScannedResults().then((value) => print(value.map((e) => e.ssid)));
+
+      // print(list.map((e) => e.ssid));
+      // }
+
+      listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
+
+      listSSID.value.removeWhere((element) => element.isEmpty);
+
+      return WifiClassConfirmationEntity(ssid1: listSSID.value.first, ssid2: listSSID.value[1], ssid3: listSSID.value.last, aulaId: aulaId, id: null);
+    } on DomainError catch (error) {
+      isSetMainError = null;
+      switch (error) {
+        default:
+          isSetMainError = UIError.unexpected;
+          break;
+      }
+      isSetLoading = false;
+    }
+  }
+
+  @override
+  Future<void> startClass(AulaEntity? aulaEntity) async {
+    try {
+      isSetLoading = true;
+
+      if (aulaEntity != null) {
+        final bluetoothState = FlutterBluePlus.isSupported;
+        await FlutterBluePlus.turnOn();
+
+        final deviceName = await FlutterBluePlus.adapterName; // Nome do bluetooth
+        var aulaData = await getPositionFixed(aulaEntity);
+        var aula = AulaEntity.copy(aulaData, iniciada: true, nomeBluetooth: deviceName);
+        await classroomUsecase.startClass(aula);
+        WifiClassConfirmationEntity? wifiList = await getWifiNetworks(aulaEntity.id);
+        if (wifiList != null) {
+          await wifiInformationUsecase.saveNetworkInformation(wifiList);
+        }
+
+        await _loadAulasByIdProfessor();
+
+        Get.to(() => ClassroomCodePage(aulaEntity: aula));
+      }
+      isSetLoading = false;
+    } on DomainError catch (error) {
+      isSetMainError = null;
+      switch (error) {
+        default:
+          isSetMainError = UIError.unexpected;
+          break;
+      }
+      isSetLoading = false;
     }
   }
 }

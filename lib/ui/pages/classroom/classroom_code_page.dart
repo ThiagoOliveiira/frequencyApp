@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frequency_app/domain/domain.dart';
+import 'package:frequency_app/main/factories/factories.dart';
 import 'package:get/get.dart';
 
 import '../../ui.dart';
@@ -10,9 +11,13 @@ class ClassroomCodePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final presenter = Get.find<ClassroomPresenter>();
+    final presenter = Get.isRegistered<ClassroomPresenter>() ? Get.find<ClassroomPresenter>() : Get.put<ClassroomPresenter>(makeGetxClassroomPresenter());
     return Scaffold(
-      appBar: AppBar(title: Text(aulaEntity?.finalizada == true ? 'Aula encerrada' : 'Aula iniciada', style: const TextStyle(color: AppColor.bluegreen600, fontSize: 18, fontWeight: FontWeight.bold))),
+      appBar: AppBar(
+        title: Text(aulaEntity?.finalizada == true ? 'Aula encerrada' : 'Aula iniciada', style: const TextStyle(color: AppColor.bluegreen600, fontSize: 18, fontWeight: FontWeight.bold)),
+        backgroundColor: Colors.blueGrey[100],
+        surfaceTintColor: Colors.white,
+      ),
       bottomNavigationBar: const DefaultBottomNavigationBar(currentPageIndex: 1),
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20),
@@ -22,6 +27,7 @@ class ClassroomCodePage extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 10),
                     DescriptionComponent(title: 'Curso', description: aulaEntity?.nomeCurso),
                     const SizedBox(height: 10),
                     DescriptionComponent(title: 'Disciplina', description: aulaEntity?.nomeDisciplina),
@@ -52,14 +58,14 @@ class ClassroomCodePage extends StatelessWidget {
                                   )
                                 : const SizedBox(),
                             const SizedBox(height: 15),
-                            Row(
+                            const Row(
                               crossAxisAlignment: CrossAxisAlignment.center,
                               mainAxisAlignment: MainAxisAlignment.start,
-                              children: const [
+                              children: [
                                 Icon(Icons.info, color: Colors.red),
                                 SizedBox(width: 10),
                                 Expanded(
-                                  child: Text('Uma vez encerrado, nenhum estudante poderá mais validar sua presença.',
+                                  child: Text('Uma vez encerrada a aula, nenhum estudante poderá mais validar sua presença.',
                                       textAlign: TextAlign.left, style: TextStyle(fontSize: 14, color: AppColor.bluegreen600, fontWeight: FontWeight.bold)),
                                 ),
                               ],

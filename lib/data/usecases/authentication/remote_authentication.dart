@@ -1,4 +1,5 @@
 import 'package:frequency_app/data/data.dart';
+
 import '../../../domain/domain.dart';
 
 class RemoteAuthentication extends Authentication {
