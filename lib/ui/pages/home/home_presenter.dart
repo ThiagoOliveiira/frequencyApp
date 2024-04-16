@@ -1,4 +1,3 @@
-import 'package:flutter_blue_plus/flutter_blue_plus.dart';
 import 'package:get/get.dart';
 
 import '../../../domain/domain.dart';
@@ -16,12 +15,12 @@ abstract class HomePresenter {
   RxInt get currentPageIndex;
   RxBool get isLoading;
   RxBool get isFormValid;
-  Stream<List<ScanResult>> get scanResults;
+  // Stream<List<ScanResult>> get scanResults;
 
   Future<void> logout();
   void validateCodeClass(String codeClass);
   Future<void> requestClassByCode();
   Future<void> confirmPresence();
   Future<void> startClass(AulaEntity? aulaEntity);
-  Future<void> teste();
+  // Future<void> teste();
 }

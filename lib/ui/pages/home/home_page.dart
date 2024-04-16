@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:frequency_app/ui/pages/nearby/nearby_page.dart';
 import 'package:frequency_app/ui/utils/string_utils.dart';
 import 'package:get/get.dart';
 
@@ -15,6 +16,7 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
     return Obx(
       () => Scaffold(
         bottomNavigationBar: const DefaultBottomNavigationBar(currentPageIndex: 0),
+        floatingActionButton: FloatingActionButton(onPressed: () => Get.to(() => const Body())),
         appBar: AppBar(
           backgroundColor: Colors.blueGrey[100],
           surfaceTintColor: Colors.white,

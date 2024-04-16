@@ -71,8 +71,7 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
     }
   }
 
-  @override
-  Future<AulaEntity?> getPositionFixed(AulaEntity? aulaEntity) async {
+  Future<AulaEntity?> _getPositionFixed(AulaEntity? aulaEntity) async {
     Location location = Location();
     PermissionStatus permissionGranted;
     LocationData locationData;
@@ -81,9 +80,9 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
 
     if (permissionGranted == PermissionStatus.denied || permissionGranted != PermissionStatus.granted) {
       permissionGranted = await location.requestPermission();
+      return null;
     } else {
       locationData = await location.getLocation();
-
       return AulaEntity.copy(aulaEntity, latitude: locationData.latitude.toString(), longitude: locationData.longitude.toString());
     }
   }
@@ -94,14 +93,13 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
       isSetLoading = true;
 
       if (aulaEntity != null) {
-        final bluetoothState = FlutterBluePlus.isSupported;
         await FlutterBluePlus.turnOn();
 
         final deviceName = await FlutterBluePlus.adapterName; // Nome do bluetooth
-        var aulaData = await getPositionFixed(aulaEntity);
+        var aulaData = await _getPositionFixed(aulaEntity);
         var aula = AulaEntity.copy(aulaData, iniciada: true, nomeBluetooth: deviceName);
         await classroomUsecase.startClass(aula);
-        WifiClassConfirmationEntity? wifiList = await getWifiNetworks(aulaEntity.id);
+        WifiClassConfirmationEntity? wifiList = await _getWifiNetworks(aulaEntity.id);
         if (wifiList != null) {
           await wifiInformationUsecase.saveNetworkInformation(wifiList);
         }
@@ -129,7 +127,6 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
       if (aulaEntity != null) {
         await classroomUsecase.endClass(AulaEntity.copy(aulaEntity, finalizada: true));
         await _loadAulasByIdProfessor();
-        // await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
       }
       isSetLoading = false;
     } on DomainError catch (error) {
@@ -143,8 +140,7 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
     }
   }
 
-  @override
-  Future<WifiClassConfirmationEntity?> getWifiNetworks(int? aulaId) async {
+  Future<WifiClassConfirmationEntity?> _getWifiNetworks(int? aulaId) async {
     try {
       Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
       Rx<List<String>> listSSID = Rx([]);
@@ -156,29 +152,6 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
 
         accessPoints.value = await WiFiScan.instance.getScannedResults();
       }
-
-      // final networks = await WifiFlutter.wifiNetworks;
-
-      // print(networks.map((e) => e.ssid));
-
-      // WifiInfoWrapper? wifiObject;
-
-      // wifiObject = await WifiInfoPlugin.wifiDetails;
-      // print(wifiObject?.linkSpeed);
-
-      // Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
-      // Rx<List<String>> listSSID = Rx([]);
-
-      // // check platform support and necessary requirements
-      // final can = await WiFiScan.instance.canStartScan();
-      // if (can == CanStartScan.yes) {
-      //   final isScanning = await WiFiScan.instance.startScan();
-      //   print(isScanning);
-
-      //   final list = await WiFiScan.instance.getScannedResults().then((value) => print(value.map((e) => e.ssid)));
-
-      // print(list.map((e) => e.ssid));
-      // }
 
       listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
 
@@ -193,6 +166,7 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
           break;
       }
       isSetLoading = false;
+      return null;
     }
   }
 

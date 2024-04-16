@@ -6,6 +6,8 @@ import 'package:flutter_svg/svg.dart';
 import 'package:frequency_app/presentation/presentation.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
+import 'package:nearby_connections/nearby_connections.dart';
+import 'package:permission_handler/permission_handler.dart' as permission;
 import 'package:wifi_scan/wifi_scan.dart';
 
 import '../../domain/domain.dart';
@@ -49,7 +51,29 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   @override
   void onInit() async {
     await loadUserInfo();
+    await checkPermitions();
     super.onInit();
+  }
+
+  Future<void> checkPermitions() async {
+    List<bool> bluetoothPermitions = await Future.wait([
+      permission.Permission.bluetooth.isGranted,
+      permission.Permission.bluetoothAdvertise.isGranted,
+      permission.Permission.bluetoothConnect.isGranted,
+      permission.Permission.bluetoothScan.isGranted
+    ]);
+    if (!bluetoothPermitions.any((element) => false)) {
+      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluethooth permissions granted :)")));
+    } else {
+      [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
+      // ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluetooth permissions not granted :(")));
+    }
+
+    if (await permission.Permission.nearbyWifiDevices.isGranted) {
+      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("NearbyWifiDevices permissions granted :)")));
+    } else {
+      permission.Permission.nearbyWifiDevices.request();
+    }
   }
 
   Future<void> loadUserInfo() async {
@@ -192,37 +216,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
     }
   }
 
-  @override
-  Future<void> teste() async {
-    isSetLoading = true;
-    // String? bluetoothName;
-    // String? bluetoothAddress;
-
-    try {
-      final bluetoothState = FlutterBluePlus.isSupported;
-      await FlutterBluePlus.turnOn();
-      // await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5), androidUsesFineLocation: false);
-
-      final deviceName = await FlutterBluePlus.adapterName; // Nome do bluetooth
-
-      // var localDevice = devices.first;
-      // bluetoothName = localDevice.name;
-      // bluetoothAddress = localDevice.id.id;
-      // } else {
-      //   bluetoothName = 'No connected devices';
-      //   bluetoothAddress = 'N/A';
-      // }
-    } catch (e) {}
-    // await FlutterBluePlus.connectedDevices.then((value) => value.firstWhere((element) => element.id.));
-    // await FlutterBluePlus.turnOn();
-    // await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5), androidUsesFineLocation: false);
-
-    // await FlutterBluePlus.stopScan();
-
-    isSetLoading = false;
-  }
-
-  Stream<List<ScanResult>> get scanResults => FlutterBluePlus.scanResults;
+  // Stream<List<ScanResult>> get scanResults => FlutterBluePlus.scanResults;
 
   @override
   void validateCodeClass(String codeClass) {
@@ -250,17 +244,23 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   Future<void> confirmPresence() async {
     try {
       isSetLoading = true;
-      bool? similarList = await checkWifi();
-      bool? inClassLocation = await checkLocation();
+      bool? similarList = await _checkWifi();
+      bool? inClassLocation = await _checkLocation();
+      await Location.instance.requestService();
+
+      print("nomeBluetooth ");
+      print(aulaEntity.value?.nomeBluetooth);
+      bool? isValid = await startDiscovery(teacherId: aulaEntity.value?.nomeBluetooth ?? '');
 
       RxBool isPresent = false.obs;
       if (inClassLocation == true && similarList == true) {
-        isPresent.value = true;
+        if (isValid == true) {
+          isPresent.value = true;
+        }
       } else {
         isPresent.value = false;
       }
-      // await checkBuetooth();
-      // await Future.delayed(const Duration(seconds: 3));
+
       isSetLoading = false;
 
       if (isPresent.value) {
@@ -313,7 +313,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
     }
   }
 
-  Future<bool?> checkWifi() async {
+  Future<bool?> _checkWifi() async {
     try {
       Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
       Rx<List<String>> listSSID = Rx([]);
@@ -338,6 +338,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
 
         return list.where((element) => element == true).length >= 2;
       }
+      return false;
     } on DomainError catch (error) {
       isSetMainError = null;
       switch (error) {
@@ -345,26 +346,23 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
           isSetMainError = UIError.unexpected;
           break;
       }
+      return false;
     } catch (e) {
       throw Exception(e);
     }
   }
 
-  Future<bool?> checkBuetooth() async {
-    try {
-      await FlutterBluePlus.turnOn();
-      await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
+  // Future<bool?> checkBuetooth() async {
+  //   try {
+  //     await FlutterBluePlus.turnOn();
+  //     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
 
-      FlutterBluePlus.scanResults.listen((results) {
-        // print(results.map((e) => e.device.platformName));
-        // print(results.map((element) => print(element.advertisementData.localName)));
-        isSameBluetooth?.value = results.any((element) => element.advertisementData.localName == aulaEntity.value?.nomeBluetooth);
-      });
-      return isSameBluetooth?.value;
-    } catch (e) {}
-  }
+  //     FlutterBluePlus.scanResults.listen((results) => isSameBluetooth?.value = results.any((element) => element.advertisementData.localName == aulaEntity.value?.nomeBluetooth));
+  //     return isSameBluetooth?.value;
+  //   } catch (e) {}
+  // }
 
-  Future<bool?> checkLocation() async {
+  Future<bool?> _checkLocation() async {
     try {
       Location location = Location();
       PermissionStatus permissionGranted;
@@ -381,6 +379,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
 
       if (permissionGranted == PermissionStatus.denied || permissionGranted != PermissionStatus.granted) {
         permissionGranted = await location.requestPermission();
+        return false;
       } else {
         locationData = await location.getLocation();
         // print("SUA LOCALIZACAO----------------------------------------------");
@@ -398,7 +397,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
         // print(distance);
 
         String message = distance < 12 ? 'As localizações estão próximas.' : 'As localizações estão distantes.';
-        // print(message);
+        print(message);
 
         return distance < 12;
       }
@@ -409,11 +408,11 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
           isSetMainError = UIError.unexpected;
           break;
       }
+      return false;
     }
   }
 
-  @override
-  Future<AulaEntity?> getPositionFixed(AulaEntity? aulaEntity) async {
+  Future<AulaEntity?> _getPositionFixed(AulaEntity? aulaEntity) async {
     Location location = Location();
     PermissionStatus permissionGranted;
     LocationData locationData;
@@ -422,15 +421,14 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
 
     if (permissionGranted == PermissionStatus.denied || permissionGranted != PermissionStatus.granted) {
       permissionGranted = await location.requestPermission();
+      return null;
     } else {
       locationData = await location.getLocation();
-
       return AulaEntity.copy(aulaEntity, latitude: locationData.latitude.toString(), longitude: locationData.longitude.toString());
     }
   }
 
-  @override
-  Future<WifiClassConfirmationEntity?> getWifiNetworks(int? aulaId) async {
+  Future<WifiClassConfirmationEntity?> _getWifiNetworks(int? aulaId) async {
     try {
       Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
       Rx<List<String>> listSSID = Rx([]);
@@ -442,29 +440,6 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
 
         accessPoints.value = await WiFiScan.instance.getScannedResults();
       }
-
-      // final networks = await WifiFlutter.wifiNetworks;
-
-      // print(networks.map((e) => e.ssid));
-
-      // WifiInfoWrapper? wifiObject;
-
-      // wifiObject = await WifiInfoPlugin.wifiDetails;
-      // print(wifiObject?.linkSpeed);
-
-      // Rx<List<WiFiAccessPoint>> accessPoints = Rx([]);
-      // Rx<List<String>> listSSID = Rx([]);
-
-      // // check platform support and necessary requirements
-      // final can = await WiFiScan.instance.canStartScan();
-      // if (can == CanStartScan.yes) {
-      //   final isScanning = await WiFiScan.instance.startScan();
-      //   print(isScanning);
-
-      //   final list = await WiFiScan.instance.getScannedResults().then((value) => print(value.map((e) => e.ssid)));
-
-      // print(list.map((e) => e.ssid));
-      // }
 
       listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
 
@@ -486,16 +461,17 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   Future<void> startClass(AulaEntity? aulaEntity) async {
     try {
       isSetLoading = true;
+      await Location.instance.requestService();
 
       if (aulaEntity != null) {
-        final bluetoothState = FlutterBluePlus.isSupported;
         await FlutterBluePlus.turnOn();
 
-        final deviceName = await FlutterBluePlus.adapterName; // Nome do bluetooth
-        var aulaData = await getPositionFixed(aulaEntity);
-        var aula = AulaEntity.copy(aulaData, iniciada: true, nomeBluetooth: deviceName);
+        var aulaData = await _getPositionFixed(aulaEntity);
+
+        var aula = AulaEntity.copy(aulaData, iniciada: true, nomeBluetooth: '${accountEntity.value?.matricula} - ${accountEntity.value?.nome}');
+        await startAdvertising();
         await classroomUsecase.startClass(aula);
-        WifiClassConfirmationEntity? wifiList = await getWifiNetworks(aulaEntity.id);
+        WifiClassConfirmationEntity? wifiList = await _getWifiNetworks(aulaEntity.id);
         if (wifiList != null) {
           await wifiInformationUsecase.saveNetworkInformation(wifiList);
         }
@@ -514,5 +490,74 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       }
       isSetLoading = false;
     }
+  }
+
+  Future<void> startAdvertising() async {
+    try {
+      const Strategy strategy = Strategy.P2P_STAR;
+
+      bool a = await Nearby().startAdvertising(
+        '${accountEntity.value?.matricula} - ${accountEntity.value?.nome}',
+        strategy,
+        onConnectionInitiated: (String id, ConnectionInfo info) {
+          Text("id: $id");
+          Text("Token: ${info.authenticationToken}");
+          Text("Name${info.endpointName}");
+          Text("Incoming: ${info.isIncomingConnection}");
+        },
+        onConnectionResult: (id, status) {
+          print('RESULTS');
+          print("id: $id - status: $status");
+        },
+        onDisconnected: (id) {
+          print('DISCONECTADO');
+          print("id: $id");
+        },
+      );
+      print("START ADVERTISING: $a");
+    } catch (exception) {
+      // showSnackbar(exception);
+    }
+  }
+
+  Future<bool?> startDiscovery({required String teacherId}) async {
+    try {
+      await permission.Permission.nearbyWifiDevices.request();
+      await permission.Permission.location.request();
+      final bluetoothState = FlutterBluePlus.isSupported;
+      await [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
+      await FlutterBluePlus.turnOn();
+      await Location.instance.requestService();
+      await checkPermitions();
+      const Strategy strategy = Strategy.P2P_STAR;
+      RxBool correto = false.obs;
+
+      bool a = await Nearby().startDiscovery(
+        '${accountEntity.value?.matricula} - ${accountEntity.value?.nome}',
+        strategy,
+        onEndpointFound: (id, name, serviceId) {
+          // show sheet automatically to request connection
+
+          if (teacherId == name) {
+            print('É O MSM');
+            correto.value = true;
+          }
+
+          print("id: $id");
+          print("Name: $name");
+          print("ServiceId: $serviceId");
+        },
+        onEndpointLost: (id) {
+          print("Lost discovered Endpoin");
+          print("id: $id");
+        },
+      );
+      print("DISCOVERING: $a");
+      await Nearby().stopDiscovery();
+      return correto.value;
+    } catch (e) {
+      print(e);
+    }
+    return null;
   }
 }

@@ -46,7 +46,6 @@ class LoginPage extends StatelessWidget with UIErrorManager, KeyboardManager {
                     const SizedBox(height: 20),
                     TextFormField(
                       maxLength: 8,
-                      initialValue: '22630868',
                       decoration: InputDecoration(
                         counter: const SizedBox(),
                         hintText: 'Matricula',
@@ -62,7 +61,6 @@ class LoginPage extends StatelessWidget with UIErrorManager, KeyboardManager {
                     const SizedBox(height: 15),
                     TextFormField(
                       obscureText: true,
-                      initialValue: 'senha1234',
                       decoration: InputDecoration(
                         hintStyle: const TextStyle(color: AppColor.bluegreen),
                         labelStyle: const TextStyle(color: AppColor.bluegreen),

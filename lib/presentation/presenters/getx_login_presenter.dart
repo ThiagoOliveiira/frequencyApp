@@ -11,15 +11,8 @@ class GetxLoginPresenter extends GetxController with LoadingManager, UIErrorMana
 
   GetxLoginPresenter({required this.authentication, required this.validation, required this.saveCurrentAccount});
 
-  String? _matricula = '98765437';
-  String? _senha = '3nRbFjVz';
-
-  @override
-  void onInit() async {
-    validateMatricula(_matricula!);
-    validateSenha(_senha!);
-    super.onInit();
-  }
+  String? _matricula;
+  String? _senha;
 
   @override
   Rxn<UIError?> matriculaError = Rxn<UIError?>();

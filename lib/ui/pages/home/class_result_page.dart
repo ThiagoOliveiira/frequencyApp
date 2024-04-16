@@ -75,9 +75,9 @@ class ClassResultPage extends StatelessWidget {
                         overlayColor: MaterialStatePropertyAll(AppColor.bluegreen600),
                         padding: MaterialStatePropertyAll((EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
                       ),
-                      child: Row(
+                      child: const Row(
                         mainAxisAlignment: MainAxisAlignment.center,
-                        children: const [
+                        children: [
                           Text('Confirmar presença', style: TextStyle(color: AppColor.white, fontSize: 18)),
                         ],
                       ),
