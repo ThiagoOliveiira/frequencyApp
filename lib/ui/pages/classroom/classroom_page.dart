@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:frequency_app/domain/domain.dart';
 import 'package:get/get.dart';
 
+import '../../../domain/domain.dart';
 import '../../ui.dart';
 
 class ClassroomPage extends StatelessWidget {
@@ -53,15 +53,14 @@ class ClassroomPage extends StatelessWidget {
                                 )
                               : const SizedBox(),
                           presenter.aulaClosed.value != null && presenter.aulaClosed.value?.isNotEmpty == true
-                              ? Expanded(
-                                  child: ListView.builder(
-                                    itemCount: presenter.aulaClosed.value?.length,
-                                    shrinkWrap: true,
-                                    itemBuilder: (context, index) {
-                                      AulaEntity? aula = presenter.aulaClosed.value?[index];
-                                      return ClassroomItemComponent(aula: aula);
-                                    },
-                                  ),
+                              ? ListView.builder(
+                                  itemCount: presenter.aulaClosed.value?.length,
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemBuilder: (context, index) {
+                                    AulaEntity? aula = presenter.aulaClosed.value?[index];
+                                    return ClassroomItemComponent(aula: aula);
+                                  },
                                 )
                               : const SizedBox(),
                         ],

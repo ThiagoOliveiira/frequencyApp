@@ -27,10 +27,40 @@ class ClassroomCodePage extends StatelessWidget {
               : Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const SizedBox(height: 10),
-                    DescriptionComponent(title: 'Curso', description: aulaEntity?.nomeCurso),
-                    const SizedBox(height: 10),
-                    DescriptionComponent(title: 'Disciplina', description: aulaEntity?.nomeDisciplina),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.end,
+                      children: [
+                        Column(
+                          children: [
+                            const SizedBox(height: 10),
+                            DescriptionComponent(title: 'Curso', description: aulaEntity?.nomeCurso),
+                            const SizedBox(height: 10),
+                            DescriptionComponent(title: 'Disciplina', description: aulaEntity?.nomeDisciplina),
+                          ],
+                        ),
+                        InkWell(
+                          onTap: () => Get.to(() => FrequencyPage(aulaEntity: aulaEntity)),
+                          child: Container(
+                            padding: const EdgeInsets.all(5),
+                            decoration: BoxDecoration(
+                              borderRadius: BorderRadius.circular(5),
+                              color: Colors.lightGreen,
+                            ),
+                            child: const Column(
+                              children: [
+                                Icon(Icons.checklist, size: 30),
+                                Text(
+                                  'Frequência',
+                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                                  textAlign: TextAlign.center,
+                                )
+                              ],
+                            ),
+                          ),
+                        )
+                      ],
+                    ),
                     Expanded(
                       child: Center(
                         child: Column(

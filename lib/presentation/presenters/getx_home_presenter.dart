@@ -66,11 +66,12 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluethooth permissions granted :)")));
     } else {
       [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
-      // ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluetooth permissions not granted :(")));
+      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluetooth permissions not granted :(")));
     }
 
     if (await permission.Permission.nearbyWifiDevices.isGranted) {
-      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("NearbyWifiDevices permissions granted :)")));
+      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("NearbyWifiDevices permissions granted :)"))); // NearbyWifiDevices
+      print('NearbyWifiDevices permissions granted :)');
     } else {
       permission.Permission.nearbyWifiDevices.request();
     }
@@ -244,9 +245,9 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   Future<void> confirmPresence() async {
     try {
       isSetLoading = true;
+      await Location.instance.requestService();
       bool? similarList = await _checkWifi();
       bool? inClassLocation = await _checkLocation();
-      await Location.instance.requestService();
 
       print("nomeBluetooth ");
       print(aulaEntity.value?.nomeBluetooth);
@@ -369,11 +370,11 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       LocationData locationData;
       double latitudeClass = double.parse(aulaEntity.value?.latitude ?? '0');
       double longitudeClass = double.parse(aulaEntity.value?.longitude ?? '0');
-      // print("LOCALIZACAO AULAAA----------------------------------------------");
+      print("LOCALIZACAO AULAAA----------------------------------------------");
 
-      // print(latitudeClass);
-      // print(longitudeClass);
-      // print("----------------------------------------------------------------");
+      print(latitudeClass);
+      print(longitudeClass);
+      print("----------------------------------------------------------------");
 
       permissionGranted = await location.hasPermission();
 
@@ -382,10 +383,12 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
         return false;
       } else {
         locationData = await location.getLocation();
-        // print("SUA LOCALIZACAO----------------------------------------------");
+        print("SUA LOCALIZACAO----------------------------------------------");
 
         currentLat.value = locationData.latitude;
         currentLong.value = locationData.longitude;
+        print(currentLat.value);
+        print(currentLong.value);
 
         const int earthRadius = 6371000; // Raio da Terra em metros
         double dLat = (currentLat.value! - latitudeClass) * (3.141592653589793 / 180);
@@ -393,8 +396,8 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
         double a = sin(dLat / 2) * sin(dLat / 2) + cos(latitudeClass * (3.141592653589793 / 180)) * cos(currentLat.value! * (3.141592653589793 / 180)) * sin(dLon / 2) * sin(dLon / 2);
         double c = 2 * atan2(sqrt(a), sqrt(1 - a));
         double distance = earthRadius * c;
-        // print("distance -----------------------------------------------------");
-        // print(distance);
+        print("distance -----------------------------------------------------");
+        print(distance);
 
         String message = distance < 12 ? 'As localizações estão próximas.' : 'As localizações estão distantes.';
         print(message);
@@ -522,13 +525,13 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
 
   Future<bool?> startDiscovery({required String teacherId}) async {
     try {
+      await checkPermitions();
       await permission.Permission.nearbyWifiDevices.request();
       await permission.Permission.location.request();
       final bluetoothState = FlutterBluePlus.isSupported;
       await [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
       await FlutterBluePlus.turnOn();
       await Location.instance.requestService();
-      await checkPermitions();
       const Strategy strategy = Strategy.P2P_STAR;
       RxBool correto = false.obs;
 
@@ -552,8 +555,9 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
           print("id: $id");
         },
       );
+
       print("DISCOVERING: $a");
-      await Nearby().stopDiscovery();
+      await Future.delayed(const Duration(seconds: 5), () async => await Nearby().stopDiscovery());
       return correto.value;
     } catch (e) {
       print(e);

@@ -11,8 +11,9 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
   final ClassroomUsecase classroomUsecase;
   final LoadCurrentAccount loadCurrentAccount;
   final WifiInformationUsecase wifiInformationUsecase;
+  final LoadStudentFrequency loadStudentFrequency;
 
-  GetxClassroomPresenter({required this.classroomUsecase, required this.loadCurrentAccount, required this.wifiInformationUsecase});
+  GetxClassroomPresenter({required this.classroomUsecase, required this.loadCurrentAccount, required this.wifiInformationUsecase, required this.loadStudentFrequency});
 
   @override
   Rx<AccountEntity?> accountEntity = Rx(null);
@@ -25,6 +26,9 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
 
   @override
   Rx<List<AulaEntity>?> aulaClosed = Rx(null);
+
+  @override
+  Rx<List<StudentFrequencyEntity?>?> frequencyClass = Rx(null);
 
   @override
   void onInit() async {
@@ -191,6 +195,20 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
         final list2 = dateNow.difference(b.dataAula!).inDays.abs();
         return list1.compareTo(list2);
       });
+    }
+  }
+
+  @override
+  Future<List<StudentFrequencyEntity?>?> getStudentFrequencyList(int? idAula) async {
+    try {
+      isSetLoading = true;
+
+      frequencyClass.value = await loadStudentFrequency.getStudentFrequency(idAula!);
+      print(frequencyClass.value);
+      isSetLoading = false;
+    } catch (e) {
+      Exception(e);
+      return null;
     }
   }
 }

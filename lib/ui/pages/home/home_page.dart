@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:frequency_app/ui/pages/nearby/nearby_page.dart';
 import 'package:frequency_app/ui/utils/string_utils.dart';
 import 'package:get/get.dart';
 
@@ -16,7 +15,7 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
     return Obx(
       () => Scaffold(
         bottomNavigationBar: const DefaultBottomNavigationBar(currentPageIndex: 0),
-        floatingActionButton: FloatingActionButton(onPressed: () => Get.to(() => const Body())),
+        // floatingActionButton: FloatingActionButton(onPressed: () => Get.to(() => const Body())),
         appBar: AppBar(
           backgroundColor: Colors.blueGrey[100],
           surfaceTintColor: Colors.white,
@@ -67,23 +66,6 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                               maxLength: 8,
                               onChanged: presenter.validateCodeClass,
                             ),
-                            // StreamBuilder<List<ScanResult>>(
-                            //   stream: presenter.scanResults,
-                            //   builder: (context, snapshot) {
-                            //     if (snapshot.hasData) {
-                            //       return ListView.builder(
-                            //         itemCount: snapshot.data?.length,
-                            //         shrinkWrap: true,
-                            //         itemBuilder: (context, index) {
-                            //           final data = snapshot.data![index];
-                            //           return SizedBox();
-                            //         },
-                            //       );
-                            //     } else {
-                            //       return const SizedBox();
-                            //     }
-                            //   },
-                            // ),
                             const SizedBox(height: 20),
                             TextButton(
                               onPressed: presenter.isFormValid.value ? () async => await presenter.requestClassByCode() : null,
@@ -210,34 +192,6 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
     );
   }
 }
-
-// String? handleDataTimeDay(DateTime? dataAula, {bool? iniciada, bool? finalizada}) {
-//   int currentDay = DateTime.now().day;
-//   if (dataAula != null) {
-//     if (iniciada == true && finalizada != true) {
-//       return 'Iniciada';
-//     } else if (finalizada == true) {
-//       return 'Encerrada';
-//     } else {
-//       if (dataAula.day == currentDay) {
-//         return 'Hoje';
-//       } else {
-//         return 'Dia ${handleDate(dataAula.day)}/${handleDate(dataAula.month)}';
-//       }
-//     }
-//   }
-//   return null;
-// }
-
-// String? handleDate(int? info) {
-//   if (info != null) {
-//     if (info >= 0 && info <= 9) {
-//       return '0$info';
-//     }
-//     return info.toString();
-//   }
-//   return null;
-// }
 
 class ItemCardHome extends StatelessWidget {
   final String title;
