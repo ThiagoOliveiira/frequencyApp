@@ -97,12 +97,12 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                         ),
                         Expanded(
                           child: ListView.builder(
-                            itemCount: presenter.aulas.value?.isNotEmpty == true ? 4 : 0,
+                            itemCount: presenter.classes.value?.isNotEmpty == true ? 4 : 0,
                             physics: const ClampingScrollPhysics(),
                             shrinkWrap: true,
                             padding: const EdgeInsets.only(bottom: 20),
                             itemBuilder: (context, index) {
-                              AulaEntity? aula = presenter.aulas.value?[index];
+                              AulaEntity? aula = presenter.classes.value?[index];
                               return Container(
                                 margin: const EdgeInsets.only(top: 20, right: 20, left: 20, bottom: 0),
                                 decoration: BoxDecoration(

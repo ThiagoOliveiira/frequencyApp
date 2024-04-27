@@ -11,31 +11,31 @@ class GetxLoginPresenter extends GetxController with LoadingManager, UIErrorMana
 
   GetxLoginPresenter({required this.authentication, required this.validation, required this.saveCurrentAccount});
 
-  String? _matricula;
-  String? _senha;
+  String? _registration;
+  String? _password;
 
   @override
-  Rxn<UIError?> matriculaError = Rxn<UIError?>();
+  Rxn<UIError?> registrationError = Rxn<UIError?>();
 
   @override
-  Rxn<UIError?> senhaError = Rxn<UIError?>();
+  Rxn<UIError?> passwordError = Rxn<UIError?>();
 
   @override
-  void validateMatricula(String matricula) {
-    _matricula = matricula;
-    matriculaError.value = _validateField('matricula');
+  void validateRegistration(String matricula) {
+    _registration = matricula;
+    registrationError.value = _validateField('registration');
     _validateForm();
   }
 
   @override
-  void validateSenha(String senha) {
-    _senha = senha;
-    senhaError.value = _validateField('senha');
+  void validatePassword(String senha) {
+    _password = senha;
+    passwordError.value = _validateField('password');
     _validateForm();
   }
 
   UIError? _validateField(String field) {
-    final formData = {'matricula': _matricula, 'senha': _senha};
+    final formData = {'registration': _registration, 'password': _password};
     final error = validation.validate(field: field, input: formData);
     switch (error) {
       case ValidationError.invalidField:
@@ -47,14 +47,14 @@ class GetxLoginPresenter extends GetxController with LoadingManager, UIErrorMana
     }
   }
 
-  void _validateForm() => setFormValid = matriculaError.value == null && matriculaError.value == null && _matricula != null && _senha != null;
+  void _validateForm() => setFormValid = registrationError.value == null && passwordError.value == null && _registration != null && _password != null;
 
   @override
   Future<void> auth() async {
     try {
       isSetLoading = true;
-      if (_matricula?.isNotEmpty == true && _senha?.isNotEmpty == true) {
-        final account = await authentication.auth(AuthenticationParams(matricula: int.parse(_matricula!), senha: _senha!));
+      if (_registration?.isNotEmpty == true && _password?.isNotEmpty == true) {
+        final account = await authentication.auth(AuthenticationParams(matricula: int.parse(_registration!), senha: _password!));
         await saveCurrentAccount.save(account);
         isSetLoading = false;
 

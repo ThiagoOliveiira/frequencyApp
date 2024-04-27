@@ -22,10 +22,10 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
   Rx<List<AulaEntity>?> aulaEntity = Rx(null);
 
   @override
-  Rx<List<AulaEntity>?> aulaNotClosed = Rx(null);
+  Rx<List<AulaEntity>?> classNotClosed = Rx(null);
 
   @override
-  Rx<List<AulaEntity>?> aulaClosed = Rx(null);
+  Rx<List<AulaEntity>?> classClosed = Rx(null);
 
   @override
   Rx<List<StudentFrequencyEntity?>?> frequencyClass = Rx(null);
@@ -55,16 +55,12 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
         DateTime dataAtual = DateTime.now();
         dataAtual = DateTime(dataAtual.year, dataAtual.month, dataAtual.day);
 
-        aulaNotClosed.value = aulaEntity.value?.where((aula) => aula.finalizada != true).toList();
-        aulaClosed.value = aulaEntity.value?.where((aula) => aula.finalizada == true || aula.dataAula!.isBefore(dataAtual)).toList();
+        classNotClosed.value = aulaEntity.value?.where((aula) => aula.finalizada != true).toList();
+        classClosed.value = aulaEntity.value?.where((aula) => aula.finalizada == true || aula.dataAula!.isBefore(dataAtual)).toList();
 
-        if (aulaNotClosed.value != null) {
-          aulaNotClosed.value = aulaNotClosed.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
-        }
+        if (classNotClosed.value != null) classNotClosed.value = classNotClosed.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
 
-        if (aulaClosed.value != null) {
-          aulaClosed.value = aulaClosed.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
-        }
+        if (classClosed.value != null) classClosed.value = classClosed.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
 
         await _sortedByMostRecentFinished();
         _sortedByMostRecent();
@@ -176,8 +172,8 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
 
   void _sortedByMostRecent() {
     final dateNow = DateTime.now();
-    if (aulaClosed.value != null) {
-      aulaClosed.value?.sort((a, b) {
+    if (classClosed.value != null) {
+      classClosed.value?.sort((a, b) {
         final list1 = dateNow.difference(a.dataAula!).inDays.abs();
         final list2 = dateNow.difference(b.dataAula!).inDays.abs();
         return list1.compareTo(list2);
@@ -189,8 +185,8 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
     DateTime dateNow = DateTime.now();
     dateNow = DateTime(dateNow.year, dateNow.month, dateNow.day);
 
-    if (aulaNotClosed.value != null) {
-      aulaNotClosed.value?.sort((a, b) {
+    if (classNotClosed.value != null) {
+      classNotClosed.value?.sort((a, b) {
         final list1 = dateNow.difference(a.dataAula!).inDays.abs();
         final list2 = dateNow.difference(b.dataAula!).inDays.abs();
         return list1.compareTo(list2);
@@ -199,7 +195,7 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
   }
 
   @override
-  Future<List<StudentFrequencyEntity?>?> getStudentFrequencyList(int? idAula) async {
+  Future<void> getStudentFrequencyList(int? idAula) async {
     try {
       isSetLoading = true;
 
@@ -208,7 +204,6 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
       isSetLoading = false;
     } catch (e) {
       Exception(e);
-      return null;
     }
   }
 }

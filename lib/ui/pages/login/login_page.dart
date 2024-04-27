@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:frequency_app/ui/ui.dart';
 import 'package:get/get.dart';
+import 'package:google_fonts/google_fonts.dart';
 
 class LoginPage extends StatelessWidget with UIErrorManager, KeyboardManager {
   final LoginPresenter presenter;
@@ -10,26 +10,8 @@ class LoginPage extends StatelessWidget with UIErrorManager, KeyboardManager {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      extendBody: true,
-      extendBodyBehindAppBar: true,
-      appBar: AppBar(
-        actions: [
-          Padding(
-            padding: const EdgeInsets.only(right: 20),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                const Text('FrequencyApp', style: TextStyle(color: AppColor.bluegreen, fontSize: 20, fontWeight: FontWeight.bold)),
-                const SizedBox(width: 10),
-                SvgPicture.asset('assets/icons/check-square.svg', color: AppColor.bluegreen, height: MediaQuery.of(context).size.width * .08),
-              ],
-            ),
-          ),
-        ],
-      ),
       body: Builder(builder: (context) {
         handleMainError(context, presenter.mainError, 'Ops!');
-
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),
           child: SingleChildScrollView(
@@ -39,42 +21,49 @@ class LoginPage extends StatelessWidget with UIErrorManager, KeyboardManager {
                 height: Get.size.height,
                 color: Colors.white,
                 child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     const SizedBox(height: kBottomNavigationBarHeight * 2),
+                    Image.asset('assets/images/pesquisa.png', scale: 5, color: AppColor.bluegreen600),
+                    Column(
+                      children: [
+                        Text('FrequencyApp', style: GoogleFonts.exo2(fontSize: 20, fontWeight: FontWeight.bold, height: 1)),
+                        Text('Simplificando sua frequência', style: GoogleFonts.exo2(fontSize: 12, fontWeight: FontWeight.w500, color: AppColor.bluegreen)),
+                      ],
+                    ),
                     const SizedBox(height: kBottomNavigationBarHeight),
-                    const Align(alignment: Alignment.centerLeft, child: Text('Login', style: TextStyle(color: AppColor.bluegreen, fontSize: 22, fontWeight: FontWeight.bold))),
+                    Align(alignment: Alignment.centerLeft, child: Text('Login', style: GoogleFonts.exo2(color: AppColor.bluegreen, fontSize: 22, fontWeight: FontWeight.bold))),
                     const SizedBox(height: 20),
                     TextFormField(
                       maxLength: 8,
                       decoration: InputDecoration(
                         counter: const SizedBox(),
                         hintText: 'Matricula',
-                        hintStyle: const TextStyle(color: AppColor.bluegreen),
+                        hintStyle: GoogleFonts.exo2(color: AppColor.bluegreen),
                         prefixIcon: const Icon(Icons.person, color: AppColor.bluegreen),
                         enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
                         focusedBorder: const OutlineInputBorder(borderSide: BorderSide(width: 2, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
-                        errorText: presenter.matriculaError.value?.description,
+                        errorText: presenter.registrationError.value?.description,
                       ),
                       keyboardType: TextInputType.number,
-                      onChanged: presenter.validateMatricula,
+                      onChanged: presenter.validateRegistration,
                     ),
                     const SizedBox(height: 15),
                     TextFormField(
                       obscureText: true,
                       decoration: InputDecoration(
-                        hintStyle: const TextStyle(color: AppColor.bluegreen),
-                        labelStyle: const TextStyle(color: AppColor.bluegreen),
+                        hintStyle: GoogleFonts.exo2(color: AppColor.bluegreen),
+                        labelStyle: GoogleFonts.exo2(color: AppColor.bluegreen),
                         alignLabelWithHint: true,
                         prefixIcon: const Icon(Icons.lock, color: AppColor.bluegreen),
                         hintText: 'Senha',
                         enabledBorder: const OutlineInputBorder(borderSide: BorderSide(width: 1, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
                         focusedBorder: const OutlineInputBorder(borderSide: BorderSide(width: 2, color: AppColor.bluegreen), borderRadius: BorderRadius.all(Radius.circular(15))),
-                        errorText: presenter.senhaError.value?.description,
+                        errorText: presenter.passwordError.value?.description,
                       ),
                       keyboardType: TextInputType.text,
-                      onChanged: presenter.validateSenha,
+                      onChanged: presenter.validatePassword,
                     ),
-                    // const SizedBox(height: kBottomNavigationBarHeight * 2),
                     const Spacer(),
                     Obx(() => presenter.isLoading.value
                         ? const CircularProgressIndicator(color: AppColor.bluegreen)
@@ -87,11 +76,11 @@ class LoginPage extends StatelessWidget with UIErrorManager, KeyboardManager {
                               padding: const MaterialStatePropertyAll((EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
                             ),
                             child: Row(
-                              children: const [
-                                Spacer(),
-                                Text('Acessar conta', style: TextStyle(color: AppColor.white, fontSize: 18)),
-                                Spacer(),
-                                Icon(Icons.arrow_forward_ios, color: AppColor.white),
+                              children: [
+                                const Spacer(),
+                                Text('Acessar conta', style: GoogleFonts.exo2(color: AppColor.white, fontSize: 18)),
+                                const Spacer(),
+                                const Icon(Icons.arrow_forward_ios, color: AppColor.white),
                               ],
                             ),
                           )),

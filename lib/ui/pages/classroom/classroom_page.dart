@@ -38,27 +38,27 @@ class ClassroomPage extends StatelessWidget {
                             child: Text('Próximas aulas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.bluegreen)),
                           ),
                           ListView.builder(
-                            itemCount: presenter.aulaNotClosed.value?.length,
+                            itemCount: presenter.classNotClosed.value?.length,
                             shrinkWrap: true,
                             physics: const NeverScrollableScrollPhysics(),
                             itemBuilder: (context, index) {
-                              AulaEntity? aula = presenter.aulaNotClosed.value?[index];
+                              AulaEntity? aula = presenter.classNotClosed.value?[index];
                               return ClassroomItemComponent(aula: aula);
                             },
                           ),
-                          presenter.aulaClosed.value != null && presenter.aulaClosed.value?.isNotEmpty == true
+                          presenter.classClosed.value != null && presenter.classClosed.value?.isNotEmpty == true
                               ? const Padding(
                                   padding: EdgeInsets.symmetric(vertical: 20, horizontal: 20),
                                   child: Text('Aulas encerradas', style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: AppColor.bluegreen)),
                                 )
                               : const SizedBox(),
-                          presenter.aulaClosed.value != null && presenter.aulaClosed.value?.isNotEmpty == true
+                          presenter.classClosed.value != null && presenter.classClosed.value?.isNotEmpty == true
                               ? ListView.builder(
-                                  itemCount: presenter.aulaClosed.value?.length,
+                                  itemCount: presenter.classClosed.value?.length,
                                   shrinkWrap: true,
                                   physics: const NeverScrollableScrollPhysics(),
                                   itemBuilder: (context, index) {
-                                    AulaEntity? aula = presenter.aulaClosed.value?[index];
+                                    AulaEntity? aula = presenter.classClosed.value?[index];
                                     return ClassroomItemComponent(aula: aula);
                                   },
                                 )

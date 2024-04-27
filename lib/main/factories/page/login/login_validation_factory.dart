@@ -5,7 +5,4 @@ import '../../../composites/composites.dart';
 
 Validation makeLoginValidation() => ValidationComposite(makeLoginValidations());
 
-List<FieldValidation> makeLoginValidations() => [
-      ...ValidationBuilder.field('matricula').required().build(),
-      ...ValidationBuilder.field('senha').required().build(),
-    ];
+List<FieldValidation> makeLoginValidations() => [...ValidationBuilder.field('registration').required().build(), ...ValidationBuilder.field('password').required().build()];

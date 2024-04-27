@@ -30,7 +30,7 @@ class ClassResultPage extends StatelessWidget {
                             Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
-                                Text(presenter.aulaEntity.value?.codigoAula ?? '', style: const TextStyle(fontSize: 27, color: AppColor.green400, fontWeight: FontWeight.bold)),
+                                Text(presenter.classroomEntity.value?.codigoAula ?? '', style: const TextStyle(fontSize: 27, color: AppColor.green400, fontWeight: FontWeight.bold)),
                                 Chip(
                                   label: const Text('Iniciada', style: TextStyle(color: AppColor.bluegreen600)),
                                   avatar: const Icon(Icons.class_, color: AppColor.green400),
@@ -49,18 +49,18 @@ class ClassResultPage extends StatelessWidget {
                             const SizedBox(height: 20),
                             ItemCardClass(
                               title: 'Curso:',
-                              description: presenter.aulaEntity.value?.nomeCurso ?? 'N/I',
+                              description: presenter.classroomEntity.value?.nomeCurso ?? 'N/I',
                             ),
                             ItemCardClass(
                               title: 'Disciplina:',
-                              description: presenter.aulaEntity.value?.nomeDisciplina ?? 'N/I',
+                              description: presenter.classroomEntity.value?.nomeDisciplina ?? 'N/I',
                             ),
-                            presenter.aulaEntity.value?.dataAula != null
-                                ? ItemCardClass(title: 'Data da aula:', description: DateFormat('dd/MM - HH:mm').format(presenter.aulaEntity.value!.dataAula!))
+                            presenter.classroomEntity.value?.dataAula != null
+                                ? ItemCardClass(title: 'Data da aula:', description: DateFormat('dd/MM - HH:mm').format(presenter.classroomEntity.value!.dataAula!))
                                 : const SizedBox(),
                             ItemCardClass(
                               title: 'Professor:',
-                              description: presenter.aulaEntity.value?.nomeProfessor ?? 'N/I',
+                              description: presenter.classroomEntity.value?.nomeProfessor ?? 'N/I',
                             ),
                           ],
                         ),

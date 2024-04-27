@@ -40,7 +40,10 @@ class ClassroomCodePage extends StatelessWidget {
                           ],
                         ),
                         InkWell(
-                          onTap: () => Get.to(() => FrequencyPage(aulaEntity: aulaEntity)),
+                          onTap: () => Get.to(() async {
+                            await presenter.getStudentFrequencyList(aulaEntity?.id);
+                            FrequencyPage(aulaEntity: aulaEntity);
+                          }),
                           child: Container(
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(
@@ -48,14 +51,7 @@ class ClassroomCodePage extends StatelessWidget {
                               color: Colors.lightGreen,
                             ),
                             child: const Column(
-                              children: [
-                                Icon(Icons.checklist, size: 30),
-                                Text(
-                                  'Frequência',
-                                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-                                  textAlign: TextAlign.center,
-                                )
-                              ],
+                              children: [Icon(Icons.checklist, size: 30), Text('Frequência', style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold), textAlign: TextAlign.center)],
                             ),
                           ),
                         )

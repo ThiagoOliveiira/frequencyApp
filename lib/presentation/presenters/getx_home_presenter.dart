@@ -1,8 +1,6 @@
 import 'dart:math';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_blue_plus/flutter_blue_plus.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:frequency_app/presentation/presentation.dart';
 import 'package:get/get.dart';
 import 'package:location/location.dart';
@@ -23,6 +21,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   GetxHomePresenter({required this.loadCurrentAccount, required this.deleteAccount, required this.validation, required this.classroomUsecase, required this.wifiInformationUsecase});
 
   String? _codeClass;
+
   Rx<bool>? isSameBluetooth = false.obs;
 
   @override
@@ -35,7 +34,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   Rx<AccountEntity?> accountEntity = Rx(null);
 
   @override
-  Rx<AulaEntity?> aulaEntity = Rx(null);
+  Rx<AulaEntity?> classroomEntity = Rx(null);
 
   @override
   Rxn<UIError?> codeClassError = Rxn<UIError?>();
@@ -46,7 +45,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   Rx<double?> currentLong = Rx(null);
 
   @override
-  Rx<List<AulaEntity>?> aulas = Rx(null);
+  Rx<List<AulaEntity>?> classes = Rx(null);
 
   @override
   void onInit() async {
@@ -62,18 +61,19 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       permission.Permission.bluetoothConnect.isGranted,
       permission.Permission.bluetoothScan.isGranted
     ]);
-    if (!bluetoothPermitions.any((element) => false)) {
-      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluethooth permissions granted :)")));
-    } else {
-      [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
-      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluetooth permissions not granted :(")));
-    }
 
-    if (await permission.Permission.nearbyWifiDevices.isGranted) {
-      ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("NearbyWifiDevices permissions granted :)"))); // NearbyWifiDevices
-      print('NearbyWifiDevices permissions granted :)');
-    } else {
+    await [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
+
+    // if (!bluetoothPermitions.any((element) => false)) {
+    //   ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluethooth permissions granted :)")));
+    // } else {
+    // await  [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
+    //   ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("Bluetooth permissions not granted :(")));
+    // }
+    if (!await permission.Permission.nearbyWifiDevices.isGranted) {
+      // ScaffoldMessenger.of(Get.context!).showSnackBar(const SnackBar(content: Text("NearbyWifiDevices permissions granted :)"))); // NearbyWifiDevices
       permission.Permission.nearbyWifiDevices.request();
+      print('NearbyWifiDevices permissions granted :)');
     }
   }
 
@@ -84,9 +84,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
 
     if (accountEntity.value != null) {
       userType.value = accountEntity.value?.tipo?.contains('aluno') == true ? UserType.aluno : UserType.professor;
-      if (userType.value == UserType.professor) {
-        await _loadAulasByIdProfessor();
-      }
+      if (userType.value == UserType.professor) await _loadAulasByIdProfessor();
     }
 
     await requestLocationPermition();
@@ -97,16 +95,16 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
     try {
       isSetLoading = true;
       if (accountEntity.value != null) {
-        aulas.value = await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
+        classes.value = await classroomUsecase.loadAulaByUsuario(accountEntity.value!.id!);
 
-        aulas.value = aulas.value?.where((aula) => aula.finalizada != true).toList();
+        classes.value = classes.value?.where((aula) => aula.finalizada != true).toList();
 
-        if (aulas.value != null) {
+        if (classes.value != null) {
           DateTime dataAtual = DateTime.now();
           dataAtual = DateTime(dataAtual.year, dataAtual.month, dataAtual.day);
 
           // Filtrando apenas as datas iguais ou posteriores à data atual
-          aulas.value = aulas.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
+          classes.value = classes.value?.where((data) => !data.dataAula!.isBefore(dataAtual)).toList();
         }
         _sortedByMostRecent();
       }
@@ -118,8 +116,8 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
 
   void _sortedByMostRecent() {
     final dateNow = DateTime.now();
-    if (aulas.value != null) {
-      aulas.value?.sort((a, b) {
+    if (classes.value != null) {
+      classes.value?.sort((a, b) {
         final list1 = dateNow.difference(a.dataAula!).inDays.abs();
         final list2 = dateNow.difference(b.dataAula!).inDays.abs();
         return list1.compareTo(list2);
@@ -131,19 +129,9 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   Future<void> logout() async {
     try {
       isSetLoading = true;
-      Get.defaultDialog(
-        backgroundColor: Colors.white,
-        title: '',
-        radius: 15,
-        barrierDismissible: false,
-        content: const Column(
-          children: [
-            SizedBox(height: 30, width: 30, child: CircularProgressIndicator(strokeWidth: 2, color: AppColor.bluegreen600)),
-            SizedBox(height: 20),
-            Text('Saindo...', style: TextStyle(fontWeight: FontWeight.w600, color: AppColor.bluegreen600))
-          ],
-        ),
-      );
+
+      LogoutDialogComponent.dialog();
+
       deleteAccount.deleteLocalAccount();
 
       await Future.delayed(const Duration(seconds: 2));
@@ -193,13 +181,11 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   Future<void> requestClassByCode() async {
     try {
       isSetLoading = true;
-      aulaEntity.value = null;
-      aulaEntity.value = await classroomUsecase.getClassByCode(_codeClass!, accountEntity.value!.id!);
-      if (aulaEntity.value != null) {
-        wifiInfoClass.value = await wifiInformationUsecase.getNetworkInformationByIdClass(aulaEntity.value!.id!);
-        if (wifiInfoClass.value != null) {
-          Get.to(() => const ClassResultPage());
-        }
+      classroomEntity.value = null;
+      classroomEntity.value = await classroomUsecase.getClassByCode(_codeClass!, accountEntity.value!.id!);
+      if (classroomEntity.value != null) {
+        wifiInfoClass.value = await wifiInformationUsecase.getNetworkInformationByIdClass(classroomEntity.value!.id!);
+        if (wifiInfoClass.value != null) Get.to(() => const ClassResultPage());
         isSetLoading = false;
       } else {
         isSetLoading = false;
@@ -216,8 +202,6 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       isSetLoading = false;
     }
   }
-
-  // Stream<List<ScanResult>> get scanResults => FlutterBluePlus.scanResults;
 
   @override
   void validateCodeClass(String codeClass) {
@@ -250,8 +234,8 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       bool? inClassLocation = await _checkLocation();
 
       print("nomeBluetooth ");
-      print(aulaEntity.value?.nomeBluetooth);
-      bool? isValid = await startDiscovery(teacherId: aulaEntity.value?.nomeBluetooth ?? '');
+      print(classroomEntity.value?.nomeBluetooth);
+      bool? isValid = await startDiscovery(teacherId: classroomEntity.value?.nomeBluetooth ?? '');
 
       RxBool isPresent = false.obs;
       if (inClassLocation == true && similarList == true) {
@@ -271,44 +255,13 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
           longitude: currentLong.toString(),
           dataHoraConfirmacao: DateTime.now(),
           idAluno: accountEntity.value?.id,
-          idAula: aulaEntity.value?.id,
+          idAula: classroomEntity.value?.id,
           presente: isPresent.value,
         );
-
         await classroomUsecase.confirmPresence(frequencyEntity);
       }
-      Get.dialog(AlertDialog(
-        title: SvgPicture.asset('assets/icons/check-square.svg', color: isPresent.value ? Colors.green : Colors.red, height: 50),
-        backgroundColor: AppColor.bluegreen.withOpacity(0.8),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            const SizedBox(height: 20),
-            Text(
-              isPresent.value ? 'Presença confirmada' : 'Sua informações não estão dentro do perímetro da aula',
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white, fontSize: 15),
-            ),
-            const SizedBox(height: 20),
-            TextButton(
-              onPressed: () => Get.back(),
-              style: const ButtonStyle(
-                backgroundColor: MaterialStatePropertyAll(AppColor.grey100),
-                shape: MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
-                overlayColor: MaterialStatePropertyAll(AppColor.grey500),
-                padding: MaterialStatePropertyAll((EdgeInsets.symmetric(vertical: 15, horizontal: 10))),
-              ),
-              child: const Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text('Fechar', style: TextStyle(color: AppColor.bluegreen600, fontSize: 18)),
-                ],
-              ),
-            )
-          ],
-        ),
-      ));
+
+      ConfirmPresenceDialogComponent.dialog(isPresent: isPresent.value);
     } catch (e) {
       throw Exception(e);
     }
@@ -353,23 +306,13 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
     }
   }
 
-  // Future<bool?> checkBuetooth() async {
-  //   try {
-  //     await FlutterBluePlus.turnOn();
-  //     await FlutterBluePlus.startScan(timeout: const Duration(seconds: 5));
-
-  //     FlutterBluePlus.scanResults.listen((results) => isSameBluetooth?.value = results.any((element) => element.advertisementData.localName == aulaEntity.value?.nomeBluetooth));
-  //     return isSameBluetooth?.value;
-  //   } catch (e) {}
-  // }
-
   Future<bool?> _checkLocation() async {
     try {
       Location location = Location();
       PermissionStatus permissionGranted;
       LocationData locationData;
-      double latitudeClass = double.parse(aulaEntity.value?.latitude ?? '0');
-      double longitudeClass = double.parse(aulaEntity.value?.longitude ?? '0');
+      double latitudeClass = double.parse(classroomEntity.value?.latitude ?? '0');
+      double longitudeClass = double.parse(classroomEntity.value?.longitude ?? '0');
       print("LOCALIZACAO AULAAA----------------------------------------------");
 
       print(latitudeClass);
@@ -440,12 +383,10 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       final can = await WiFiScan.instance.canStartScan(askPermissions: true);
       if (can == CanStartScan.yes) {
         await WiFiScan.instance.startScan();
-
         accessPoints.value = await WiFiScan.instance.getScannedResults();
       }
 
       listSSID.value.addAll(accessPoints.value.map((e) => e.ssid));
-
       listSSID.value.removeWhere((element) => element.isEmpty);
 
       return WifiClassConfirmationEntity(ssid1: listSSID.value.first, ssid2: listSSID.value[1], ssid3: listSSID.value.last, aulaId: aulaId, id: null);
@@ -457,6 +398,7 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
           break;
       }
       isSetLoading = false;
+      return null;
     }
   }
 
@@ -502,25 +444,12 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       bool a = await Nearby().startAdvertising(
         '${accountEntity.value?.matricula} - ${accountEntity.value?.nome}',
         strategy,
-        onConnectionInitiated: (String id, ConnectionInfo info) {
-          Text("id: $id");
-          Text("Token: ${info.authenticationToken}");
-          Text("Name${info.endpointName}");
-          Text("Incoming: ${info.isIncomingConnection}");
-        },
-        onConnectionResult: (id, status) {
-          print('RESULTS');
-          print("id: $id - status: $status");
-        },
-        onDisconnected: (id) {
-          print('DISCONECTADO');
-          print("id: $id");
-        },
+        onConnectionInitiated: (String id, ConnectionInfo info) {},
+        onConnectionResult: (id, status) {},
+        onDisconnected: (id) {},
       );
       print("START ADVERTISING: $a");
-    } catch (exception) {
-      // showSnackbar(exception);
-    }
+    } catch (_) {}
   }
 
   Future<bool?> startDiscovery({required String teacherId}) async {
@@ -528,8 +457,6 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
       await checkPermitions();
       await permission.Permission.nearbyWifiDevices.request();
       await permission.Permission.location.request();
-      final bluetoothState = FlutterBluePlus.isSupported;
-      await [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
       await FlutterBluePlus.turnOn();
       await Location.instance.requestService();
       const Strategy strategy = Strategy.P2P_STAR;
@@ -539,21 +466,12 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
         '${accountEntity.value?.matricula} - ${accountEntity.value?.nome}',
         strategy,
         onEndpointFound: (id, name, serviceId) {
-          // show sheet automatically to request connection
-
           if (teacherId == name) {
             print('É O MSM');
             correto.value = true;
           }
-
-          print("id: $id");
-          print("Name: $name");
-          print("ServiceId: $serviceId");
         },
-        onEndpointLost: (id) {
-          print("Lost discovered Endpoin");
-          print("id: $id");
-        },
+        onEndpointLost: (id) {},
       );
 
       print("DISCOVERING: $a");

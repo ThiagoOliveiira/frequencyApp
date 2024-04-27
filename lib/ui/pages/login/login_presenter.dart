@@ -9,9 +9,9 @@ abstract class LoginPresenter {
   RxBool get isLoading;
 
   Rxn<UIError?> get mainError;
-  Rxn<UIError?> get matriculaError;
-  Rxn<UIError?> get senhaError;
+  Rxn<UIError?> get registrationError;
+  Rxn<UIError?> get passwordError;
 
-  void validateMatricula(String matricula);
-  void validateSenha(String senha);
+  void validateRegistration(String registration);
+  void validatePassword(String password);
 }
