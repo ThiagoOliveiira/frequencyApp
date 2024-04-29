@@ -22,8 +22,12 @@ class SplashPage extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Obx(() => Text('FrequencyApp', style: GoogleFonts.exo2(fontSize: 30, fontWeight: FontWeight.bold, height: 1, color: presenter.colors.value[presenter.currentIndex.value]))),
-              Text('Simplificando sua frequência', style: GoogleFonts.exo2(fontSize: 15, fontWeight: FontWeight.w500, color: AppColor.bluegreen)),
+              Obx(() =>
+                  Text('FrequencyApp', style: GoogleFonts.exo2(fontSize: 30, fontWeight: FontWeight.bold, height: 1, color: presenter.colors.value[presenter.currentIndex.value]))),
+              Obx(
+                () => Text('Simplificando sua frequência',
+                    style: GoogleFonts.exo2(fontSize: 15, fontWeight: FontWeight.w500, color: presenter.colors.value[presenter.currentIndex.value]?.withOpacity(0.3))),
+              ),
               const SizedBox(height: 2)
             ],
           ),

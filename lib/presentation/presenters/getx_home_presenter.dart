@@ -18,7 +18,8 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   final ClassroomUsecase classroomUsecase;
   final WifiInformationUsecase wifiInformationUsecase;
 
-  GetxHomePresenter({required this.loadCurrentAccount, required this.deleteAccount, required this.validation, required this.classroomUsecase, required this.wifiInformationUsecase});
+  GetxHomePresenter(
+      {required this.loadCurrentAccount, required this.deleteAccount, required this.validation, required this.classroomUsecase, required this.wifiInformationUsecase});
 
   String? _codeClass;
 
@@ -55,11 +56,11 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
   }
 
   Future<void> checkPermitions() async {
-    List<bool> bluetoothPermitions = await Future.wait([
+    await Future.wait([
       permission.Permission.bluetooth.isGranted,
       permission.Permission.bluetoothAdvertise.isGranted,
       permission.Permission.bluetoothConnect.isGranted,
-      permission.Permission.bluetoothScan.isGranted
+      permission.Permission.bluetoothScan.isGranted,
     ]);
 
     await [permission.Permission.bluetooth, permission.Permission.bluetoothAdvertise, permission.Permission.bluetoothConnect, permission.Permission.bluetoothScan].request();
@@ -336,7 +337,8 @@ class GetxHomePresenter extends GetxController with LoadingManager, UIErrorManag
         const int earthRadius = 6371000; // Raio da Terra em metros
         double dLat = (currentLat.value! - latitudeClass) * (3.141592653589793 / 180);
         double dLon = (currentLong.value! - longitudeClass) * (3.141592653589793 / 180);
-        double a = sin(dLat / 2) * sin(dLat / 2) + cos(latitudeClass * (3.141592653589793 / 180)) * cos(currentLat.value! * (3.141592653589793 / 180)) * sin(dLon / 2) * sin(dLon / 2);
+        double a =
+            sin(dLat / 2) * sin(dLat / 2) + cos(latitudeClass * (3.141592653589793 / 180)) * cos(currentLat.value! * (3.141592653589793 / 180)) * sin(dLon / 2) * sin(dLon / 2);
         double c = 2 * atan2(sqrt(a), sqrt(1 - a));
         double distance = earthRadius * c;
         print("distance -----------------------------------------------------");
