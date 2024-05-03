@@ -198,9 +198,7 @@ class GetxClassroomPresenter extends GetxController with LoadingManager, UIError
   Future<void> getStudentFrequencyList(int? idAula) async {
     try {
       isSetLoading = true;
-
       frequencyClass.value = await loadStudentFrequency.getStudentFrequency(idAula!);
-      print(frequencyClass.value);
       isSetLoading = false;
     } catch (e) {
       Exception(e);

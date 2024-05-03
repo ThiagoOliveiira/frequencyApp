@@ -32,6 +32,8 @@ class ClassroomCodePage extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
                             const SizedBox(height: 10),
                             DescriptionComponent(title: 'Curso', description: aulaEntity?.nomeCurso),
@@ -40,10 +42,10 @@ class ClassroomCodePage extends StatelessWidget {
                           ],
                         ),
                         InkWell(
-                          onTap: () => Get.to(() async {
+                          onTap: () async {
                             await presenter.getStudentFrequencyList(aulaEntity?.id);
-                            FrequencyPage(aulaEntity: aulaEntity);
-                          }),
+                            Get.to(() => FrequencyPage(aulaEntity: aulaEntity));
+                          },
                           child: Container(
                             padding: const EdgeInsets.all(5),
                             decoration: BoxDecoration(

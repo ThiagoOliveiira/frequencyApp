@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:frequency_app/ui/utils/string_utils.dart';
 import 'package:get/get.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 import '../../../domain/domain.dart';
 import '../../ui.dart';
@@ -19,11 +20,19 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
         appBar: AppBar(
           backgroundColor: Colors.blueGrey[100],
           surfaceTintColor: Colors.white,
-          title: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+          title: Row(
+            mainAxisSize: MainAxisSize.min,
             children: [
-              const Text('FrequencyApp', style: TextStyle(color: AppColor.blue800, fontSize: 12, fontWeight: FontWeight.bold)),
-              Text(presenter.accountEntity.value?.nome ?? '', style: const TextStyle(color: AppColor.bluegreen, fontSize: 18, fontWeight: FontWeight.bold)),
+              Image.asset('assets/images/pesquisa.png', height: MediaQuery.of(context).size.height * 0.04, color: AppColor.blue800),
+              const SizedBox(width: 5),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('FrequencyApp - ${presenter.userType.value == UserType.aluno ? 'Aluno' : 'Professor'}',
+                      style: const TextStyle(color: AppColor.blue800, fontSize: 12, fontWeight: FontWeight.bold)),
+                  Text(presenter.accountEntity.value?.nome ?? '', style: const TextStyle(color: AppColor.bluegreen, fontSize: 18, fontWeight: FontWeight.bold)),
+                ],
+              ),
             ],
           ),
           actions: [
@@ -68,7 +77,13 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                             ),
                             const SizedBox(height: 20),
                             TextButton(
-                              onPressed: presenter.isFormValid.value ? () async => await presenter.requestClassByCode() : null,
+                              onPressed: presenter.isFormValid.value
+                                  ? () async {
+                                      await [Permission.bluetooth, Permission.bluetoothAdvertise, Permission.bluetoothConnect, Permission.bluetoothScan].request();
+                                      await Permission.nearbyWifiDevices.request();
+                                      await presenter.requestClassByCode();
+                                    }
+                                  : null,
                               style: ButtonStyle(
                                 backgroundColor: MaterialStatePropertyAll(presenter.isFormValid.value ? AppColor.bluegreen : AppColor.grey500),
                                 shape: const MaterialStatePropertyAll(RoundedRectangleBorder(borderRadius: BorderRadius.all(Radius.circular(15)))),
@@ -134,7 +149,11 @@ class HomePage extends StatelessWidget with UIErrorManager, KeyboardManager {
                                         ? InkWell(
                                             highlightColor: AppColor.bluegreen,
                                             borderRadius: const BorderRadius.only(topLeft: Radius.circular(15), bottomRight: Radius.circular(5)),
-                                            onTap: () async => await presenter.startClass(aula),
+                                            onTap: () async {
+                                              await [Permission.bluetooth, Permission.bluetoothAdvertise, Permission.bluetoothConnect, Permission.bluetoothScan].request();
+                                              await Permission.nearbyWifiDevices.request();
+                                              await presenter.startClass(aula);
+                                            },
                                             child: Padding(
                                               padding: const EdgeInsets.only(left: 3, top: 3),
                                               child: Container(
